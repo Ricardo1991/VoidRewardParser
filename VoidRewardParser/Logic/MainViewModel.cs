@@ -13,7 +13,7 @@ namespace VoidRewardParser.Logic
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        DispatcherTimer _parseTimer;
+        private DispatcherTimer _parseTimer;
         private ObservableCollection<DisplayPrime> _primeItems = new ObservableCollection<DisplayPrime>();
         private bool _warframeNotDetected;
         private bool showAllPrimes;
@@ -62,7 +62,7 @@ namespace VoidRewardParser.Logic
                 showAllPrimes = value;
                 if (showAllPrimes)
                 {
-                    foreach(var primeItem in PrimeItems)
+                    foreach (var primeItem in PrimeItems)
                     {
                         primeItem.Visible = true;
                     }
@@ -81,14 +81,14 @@ namespace VoidRewardParser.Logic
             };
             _parseTimer.Tick += _parseTimer_Tick;
             _parseTimer.Start();
-            
+
             LoadCommand = new DelegateCommand(LoadData);
         }
 
         private async void LoadData()
         {
             var primeData = await PrimeData.GetInstance();
-            foreach(var primeItem in primeData.Primes)
+            foreach (var primeItem in primeData.Primes)
             {
                 PrimeItems.Add(new DisplayPrime() { Data = primeData.GetDataForItem(primeItem), Prime = primeItem });
             }
@@ -106,7 +106,7 @@ namespace VoidRewardParser.Logic
             if (Warframe.WarframeIsRunning())
             {
                 var text = await ScreenCapture.ParseTextAsync();
-                
+
                 var hiddenPrimes = new List<DisplayPrime>();
                 List<Task> fetchPlatpriceTasks = new List<Task>();
                 foreach (var p in PrimeItems)
@@ -131,7 +131,7 @@ namespace VoidRewardParser.Logic
                     }
                 }
 
-                if(text.Contains(LocalizationManager.MissionSuccess) && _lastMissionComplete.AddMinutes(1) > DateTime.Now && 
+                if (text.Contains(LocalizationManager.MissionSuccess) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
                     PrimeItems.Count - hiddenPrimes.Count == 1)
                 {
                     //Auto-record the selected reward if we detect a prime on the mission complete screen
@@ -156,7 +156,10 @@ namespace VoidRewardParser.Logic
 
         private async Task FetchPlatPriceTask(DisplayPrime displayPrime)
         {
-            var minSell = await PlatinumPrices.GetPrimePlatSellOrders(displayPrime.Prime.Name);
+            string name = displayPrime.Prime.Name;
+
+            var minSell = await PlatinumPrices.GetPrimePlatSellOrders(name);
+
             if (minSell.HasValue)
             {
                 displayPrime.PlatinumPrice = minSell.ToString();
@@ -165,11 +168,22 @@ namespace VoidRewardParser.Logic
             {
                 displayPrime.PlatinumPrice = "?";
             }
+
+            var ducat = await DucatPrices.GetPrimePlatDucats(name);
+
+            if (ducat.HasValue)
+            {
+                displayPrime.DucatValue = (int)ducat;
+            }
+            else
+            {
+                displayPrime.DucatValue = 0;
+            }
         }
-        
+
         private void OnMissionComplete()
         {
-            if(_lastMissionComplete + TimeSpan.FromSeconds(30) < DateTime.Now)
+            if (_lastMissionComplete + TimeSpan.FromSeconds(30) < DateTime.Now)
             {
                 //Only raise this event at most once every 30 seconds
                 MissionComplete?.Invoke(this, EventArgs.Empty);
@@ -183,7 +197,7 @@ namespace VoidRewardParser.Logic
         }
 
         #region INotifyPropertyChanged
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnNotifyPropertyChanged([CallerMemberName]string propertyName = "")
@@ -191,6 +205,6 @@ namespace VoidRewardParser.Logic
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
+        #endregion INotifyPropertyChanged
     }
 }

@@ -73,6 +73,20 @@ namespace VoidRewardParser.Entities
             }
         }
 
+        public int DucatValue
+        {
+            get
+            {
+                return Prime.Ducats;
+            }
+            set
+            {
+                if (Prime.Ducats == value) return;
+                Prime.Ducats = value;
+                OnNotifyPropertyChanged();
+            }
+        }
+
         public DelegateCommand AddCommand { get; set; }
         public DelegateCommand SubtractCommand { get; set; }
 
@@ -91,6 +105,6 @@ namespace VoidRewardParser.Entities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
+        #endregion INotifyPropertyChanged
     }
 }

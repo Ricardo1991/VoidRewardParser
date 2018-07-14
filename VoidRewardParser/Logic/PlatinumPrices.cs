@@ -16,6 +16,7 @@ namespace VoidRewardParser.Logic
         private static TimeSpan _expirationTimespan = TimeSpan.Parse(ConfigurationManager.AppSettings["PlatinumCacheExpiration"]);
         private static Dictionary<string, CacheEntry<long?>> _marketCache = new Dictionary<string, CacheEntry<long?>>();
         private const string _baseUrl = "https://api.warframe.market/v1/items/{0}/orders";
+
         private static readonly string[] _removeBPSuffixPhrases = new[]{
             "Neuroptics", "Chassis", "Systems", "Harness", "Wings"
         };
@@ -58,7 +59,7 @@ namespace VoidRewardParser.Logic
                         .Where(order => order.user.status == "online" || order.user.status == "ingame")
                         .Where(order => order.order_type == "sell")
                         .Min(order => order.platinum);
-                    
+
                     _marketCache[primeName] = new CacheEntry<long?>(smallestPrice);
                     return smallestPrice;
                 }
@@ -66,7 +67,7 @@ namespace VoidRewardParser.Logic
                 {
                     return null;
                 }
-            }            
+            }
         }
     }
 }

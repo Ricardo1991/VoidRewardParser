@@ -157,6 +157,7 @@
     <Compile Include="Forms\PrimeDisplay.xaml.cs">
       <DependentUpon>PrimeDisplay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logic\DucatPrices.cs" />
     <Compile Include="Logic\LocalizationManager.cs" />
     <Compile Include="Logic\MainViewModel.cs" />
     <Compile Include="Logic\PlatinumPrices.cs" />
