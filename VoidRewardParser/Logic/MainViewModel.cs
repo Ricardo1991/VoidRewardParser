@@ -108,11 +108,9 @@ namespace VoidRewardParser.Logic
         private async void _parseTimer_Tick(object sender, object e)
         {
             _parseTimer.Stop();
-            if (Warframe.WarframeIsRunning())
-            {
-                if (!IsOnFocus())
-                    return;
 
+            if (Warframe.WarframeIsRunning() && IsOnFocus())
+            {
                 var text = await ScreenCapture.ParseTextAsync();
 
                 text = await Task.Run(() => SpellCheckOCR(text));
@@ -167,8 +165,12 @@ namespace VoidRewardParser.Logic
         private bool IsOnFocus()
         {
             Process warframeProcess = ScreenCapture.GetProcess();
+            if (warframeProcess == null)
+            {
+                return false;       // Warframe not running
+            }
 
-            var activatedHandle = GetForegroundWindow();
+            IntPtr activatedHandle = GetForegroundWindow();
             if (activatedHandle == IntPtr.Zero)
             {
                 return false;       // No window is currently activated
