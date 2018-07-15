@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -33,47 +31,39 @@ namespace VoidRewardParser.Logic
 
         public static async Task<int?> GetPrimePlatDucats(string primeName)
         {
-            try
+            if (string.IsNullOrEmpty(primeName)) return null;
+
+            if (_marketCache.TryGetValue(primeName, out CacheEntry<int?> cacheItem))
             {
-                if (_marketCache.TryGetValue(primeName, out CacheEntry<int?> cacheItem))
-                {
-                    if (!cacheItem.IsExpired(_expirationTimespan))
-                    {
-                        return cacheItem.Value;
-                    }
-                }
-
-                var partName = primeName.ToLower().Replace(' ', '_');
-
-                string jsonData;
-                using (var client = new WebClient())
-                {
-                    var uri = new Uri(string.Format(_baseUrl, Uri.EscapeDataString(partName)));
-
-                    try
-                    {
-                        jsonData = await client.DownloadStringTaskAsync(uri);
-
-                        dynamic result = JsonConvert.DeserializeObject(jsonData);
-
-                        IEnumerable<dynamic> results = result.payload.item.items_in_set;
-                        int? ducatValue = results
-                            .Where(order => order.url_name == partName)
-                            .Min(order => order.ducats);
-
-                        _marketCache[primeName] = new CacheEntry<int?>(ducatValue);
-                        return ducatValue;
-                    }
-                    catch
-                    {
-                        Console.Error.WriteLine("Error getting ducats for " + primeName);
-                        return null;
-                    }
-                }
+                return cacheItem.Value;
             }
-            catch
+
+            var partName = primeName.ToLower().Replace(' ', '_');
+
+            string jsonData;
+            using (var client = new WebClient())
             {
-                return null;
+                var uri = new Uri(string.Format(_baseUrl, Uri.EscapeDataString(partName)));
+
+                try
+                {
+                    jsonData = await client.DownloadStringTaskAsync(uri);
+
+                    dynamic result = JsonConvert.DeserializeObject(jsonData);
+
+                    IEnumerable<dynamic> results = result.payload.item.items_in_set;
+                    int? ducatValue = results
+                        .Where(order => order.url_name == partName)
+                        .Min(order => order.ducats);
+
+                    _marketCache[primeName] = new CacheEntry<int?>(ducatValue);
+                    return ducatValue;
+                }
+                catch
+                {
+                    Console.Error.WriteLine("Error getting ducats for " + primeName);
+                    return null;
+                }
             }
         }
     }

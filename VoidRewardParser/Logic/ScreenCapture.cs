@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using System.Windows;
 using Windows.Globalization;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Configuration;
 
 namespace VoidRewardParser.Logic
 {
@@ -34,15 +35,40 @@ namespace VoidRewardParser.Logic
 
         public static void SaveScreenshot(Stream stream)
         {
-            int width = (int)SystemParameters.FullPrimaryScreenWidth;
-            int height = (int)SystemParameters.FullPrimaryScreenHeight;
-            Bitmap bitmap = MakeGrayscale3(new Bitmap(width, height, PixelFormat.Format24bppRgb));
-            using (var graphics = Graphics.FromImage(bitmap))
+            Process p = GetProcess();
+            if (p == null)
+                return;
+
+            IntPtr ptr = p.MainWindowHandle;
+            User32.Rect rect = new User32.Rect();
+            User32.GetWindowRect(ptr, ref rect);
+
+            int width = rect.Right - rect.Left;
+            int height = rect.Bottom - rect.Top;
+
+            using (Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb))
             {
-                graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
-                graphics.Save();
-                bitmap.Save(stream, ImageFormat.Png);
+                using (var graphics = Graphics.FromImage(bitmap))
+                {
+                    graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new System.Drawing.Size(width, height));
+                    graphics.Save();
+                    graphics.Dispose();
+                    MakeGrayscale3(bitmap).Save(stream, ImageFormat.Png);
+                }
             }
+        }
+
+        private static Process GetProcess()
+        {
+            foreach (Process p in Process.GetProcesses())
+            {
+                if (string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe"))
+                {
+                    return p;
+                }
+            }
+
+            return null;
         }
 
         public static Bitmap MakeGrayscale3(Bitmap original)
@@ -94,6 +120,20 @@ namespace VoidRewardParser.Logic
             var decoder = await Windows.Graphics.Imaging.BitmapDecoder.CreateAsync(stream);
             var result = await engine.RecognizeAsync(await decoder.GetSoftwareBitmapAsync());
             return result.Text;
+        }
+
+        private class User32
+        {
+            [DllImport("user32.dll")]
+            public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+
+            public struct Rect
+            {
+                public int Left { get; set; }
+                public int Top { get; set; }
+                public int Right { get; set; }
+                public int Bottom { get; set; }
+            }
         }
     }
 }

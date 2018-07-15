@@ -18,6 +18,7 @@ namespace VoidRewardParser.Logic
         private bool _warframeNotDetected;
         private bool showAllPrimes;
         private DateTime _lastMissionComplete;
+        private SpellCheck spelling;
 
         public DelegateCommand LoadCommand { get; set; }
 
@@ -83,6 +84,8 @@ namespace VoidRewardParser.Logic
             _parseTimer.Start();
 
             LoadCommand = new DelegateCommand(LoadData);
+
+            spelling = new SpellCheck();
         }
 
         private async void LoadData()
@@ -106,6 +109,8 @@ namespace VoidRewardParser.Logic
             if (Warframe.WarframeIsRunning())
             {
                 var text = await ScreenCapture.ParseTextAsync();
+
+                text = await Task.Run(() => SpellCheckOCR(text));
 
                 var hiddenPrimes = new List<DisplayPrime>();
                 List<Task> fetchPlatpriceTasks = new List<Task>();
@@ -152,6 +157,19 @@ namespace VoidRewardParser.Logic
                 WarframeNotDetected = true;
             }
             _parseTimer.Start();
+        }
+
+        private string SpellCheckOCR(string text)
+        {
+            if (spelling == null) return text;
+
+            string correction = "";
+            foreach (string item in text.Split(' '))
+            {
+                correction += " " + spelling.Correct(item);
+            }
+
+            return correction;
         }
 
         private async Task FetchPlatPriceTask(DisplayPrime displayPrime)

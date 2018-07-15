@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -33,6 +31,8 @@ namespace VoidRewardParser.Logic
 
         public static async Task<long?> GetPrimePlatSellOrders(string primeName)
         {
+            if (string.IsNullOrEmpty(primeName)) return null;
+
             if (_marketCache.TryGetValue(primeName, out CacheEntry<long?> cacheItem))
             {
                 if (!cacheItem.IsExpired(_expirationTimespan))
