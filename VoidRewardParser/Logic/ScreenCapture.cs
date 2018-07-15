@@ -58,7 +58,7 @@ namespace VoidRewardParser.Logic
             }
         }
 
-        private static Process GetProcess()
+        public static Process GetProcess()
         {
             foreach (Process p in Process.GetProcesses())
             {

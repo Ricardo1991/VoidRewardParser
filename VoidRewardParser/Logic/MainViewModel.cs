@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using VoidRewardParser.Entities;
@@ -108,6 +110,9 @@ namespace VoidRewardParser.Logic
             _parseTimer.Stop();
             if (Warframe.WarframeIsRunning())
             {
+                if (!IsOnFocus())
+                    return;
+
                 var text = await ScreenCapture.ParseTextAsync();
 
                 text = await Task.Run(() => SpellCheckOCR(text));
@@ -158,6 +163,27 @@ namespace VoidRewardParser.Logic
             }
             _parseTimer.Start();
         }
+
+        private bool IsOnFocus()
+        {
+            Process warframeProcess = ScreenCapture.GetProcess();
+
+            var activatedHandle = GetForegroundWindow();
+            if (activatedHandle == IntPtr.Zero)
+            {
+                return false;       // No window is currently activated
+            }
+
+            GetWindowThreadProcessId(activatedHandle, out int activeProcId);
+
+            return activeProcId == warframeProcess.Id;
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 
         private string SpellCheckOCR(string text)
         {
