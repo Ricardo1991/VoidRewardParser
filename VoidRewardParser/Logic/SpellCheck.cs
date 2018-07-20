@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace VoidRewardParser
+namespace VoidRewardParser.Logic
 {
     internal class SpellCheck
     {
@@ -13,7 +13,7 @@ namespace VoidRewardParser
 
         public SpellCheck()
         {
-            string fileContent = File.ReadAllText("myDictionary.txt");
+            string fileContent = File.ReadAllText("WarframeDictionary.txt");
             List<string> wordList = fileContent.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             foreach (var word in wordList)

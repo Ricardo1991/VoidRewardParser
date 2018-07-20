@@ -43,14 +43,19 @@ namespace VoidRewardParser.Logic
 
             var partName = primeName.ToLower().Replace(' ', '_');
 
-            string jsonData;
+            if (partName.Equals("forma_blueprint"))
+            {
+                _marketCache[primeName] = new CacheEntry<long?>(0);
+                return 0;
+            }
+
             using (var client = new WebClient())
             {
                 var uri = new Uri(string.Format(_baseUrl, Uri.EscapeDataString(partName)));
 
                 try
                 {
-                    jsonData = await client.DownloadStringTaskAsync(uri);
+                    string jsonData = await client.DownloadStringTaskAsync(uri);
 
                     dynamic result = JsonConvert.DeserializeObject(jsonData);
 
@@ -65,6 +70,7 @@ namespace VoidRewardParser.Logic
                 }
                 catch
                 {
+                    Console.Error.WriteLine("Error getting platinum price for " + primeName);
                     return null;
                 }
             }

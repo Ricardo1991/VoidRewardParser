@@ -144,7 +144,7 @@ namespace VoidRewardParser.Logic
                 {
                     //Auto-record the selected reward if we detect a prime on the mission complete screen
                     _lastMissionComplete = DateTime.MinValue;
-                    await PrimeItems.FirstOrDefault(p => p.Visible)?.AddCommand?.Execute();
+                    PrimeItems.FirstOrDefault(p => p.Visible)?.AddCommand?.Execute();
                 }
 
                 if (text.Contains(LocalizationManager.SelectAReward) && PrimeItems.Count - hiddenPrimes.Count > 0)
