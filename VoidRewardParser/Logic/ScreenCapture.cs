@@ -46,6 +46,8 @@ namespace VoidRewardParser.Logic
             int width = rect.Right - rect.Left;
             int height = rect.Bottom - rect.Top;
 
+            if (height == 0 || width == 0) return;
+
             using (Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb))
             {
                 using (var graphics = Graphics.FromImage(bitmap))

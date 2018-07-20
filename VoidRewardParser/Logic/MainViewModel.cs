@@ -18,6 +18,7 @@ namespace VoidRewardParser.Logic
         private DispatcherTimer _parseTimer;
         private ObservableCollection<DisplayPrime> _primeItems = new ObservableCollection<DisplayPrime>();
         private bool _warframeNotDetected;
+        private bool _warframeNotFocus;
         private bool showAllPrimes;
         private DateTime _lastMissionComplete;
         private SpellCheck spelling;
@@ -49,6 +50,20 @@ namespace VoidRewardParser.Logic
             {
                 if (_warframeNotDetected == value) return;
                 _warframeNotDetected = value;
+                OnNotifyPropertyChanged();
+            }
+        }
+
+        public bool WarframeNotFocus
+        {
+            get
+            {
+                return _warframeNotFocus;
+            }
+            set
+            {
+                if (_warframeNotFocus == value) return;
+                _warframeNotFocus = value;
                 OnNotifyPropertyChanged();
             }
         }
@@ -109,7 +124,15 @@ namespace VoidRewardParser.Logic
         {
             _parseTimer.Stop();
 
-            if (Warframe.WarframeIsRunning() && IsOnFocus())
+            if (!Warframe.WarframeIsRunning())
+            {
+                WarframeNotDetected = true;
+            }
+            else if (!IsOnFocus())
+            {
+                WarframeNotFocus = true;
+            }
+            else
             {
                 var text = await ScreenCapture.ParseTextAsync();
 
@@ -123,6 +146,7 @@ namespace VoidRewardParser.Logic
                     {
                         p.Visible = true;
                         fetchPlatpriceTasks.Add(FetchPlatPriceTask(p));
+                        fetchPlatpriceTasks.Add(FetchDucatPriceTask(p));
                     }
                     else
                     {
@@ -144,7 +168,7 @@ namespace VoidRewardParser.Logic
                 {
                     //Auto-record the selected reward if we detect a prime on the mission complete screen
                     _lastMissionComplete = DateTime.MinValue;
-                    PrimeItems.FirstOrDefault(p => p.Visible)?.AddCommand?.Execute();
+                    await Task.Run(() => PrimeItems.FirstOrDefault(p => p.Visible)?.AddCommand?.Execute());
                 }
 
                 if (text.Contains(LocalizationManager.SelectAReward) && PrimeItems.Count - hiddenPrimes.Count > 0)
@@ -152,12 +176,9 @@ namespace VoidRewardParser.Logic
                     OnMissionComplete();
                 }
                 WarframeNotDetected = false;
+                WarframeNotFocus = false;
 
                 await Task.WhenAll(fetchPlatpriceTasks);
-            }
-            else
-            {
-                WarframeNotDetected = true;
             }
             _parseTimer.Start();
         }
@@ -214,16 +235,22 @@ namespace VoidRewardParser.Logic
             {
                 displayPrime.PlatinumPrice = "?";
             }
+        }
+
+        private async Task FetchDucatPriceTask(DisplayPrime displayPrime)
+        {
+            string name = displayPrime.Prime.Name;
 
             var ducat = await DucatPrices.GetPrimePlatDucats(name);
 
             if (ducat.HasValue)
             {
-                displayPrime.DucatValue = (int)ducat;
+                displayPrime.Prime.Ducats = (int)ducat;
+                displayPrime.DucatValue = ((int)ducat).ToString();
             }
             else
             {
-                displayPrime.DucatValue = 0;
+                displayPrime.DucatValue = "?";
             }
         }
 
