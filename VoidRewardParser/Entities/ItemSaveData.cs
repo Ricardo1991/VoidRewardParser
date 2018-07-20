@@ -23,7 +23,7 @@ namespace VoidRewardParser.Entities
                 OnNotifyPropertyChanged();
             }
         }
-        
+
         public string Notes
         {
             get
@@ -48,6 +48,6 @@ namespace VoidRewardParser.Entities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
+        #endregion INotifyPropertyChanged
     }
 }

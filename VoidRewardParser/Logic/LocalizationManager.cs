@@ -52,8 +52,8 @@ namespace VoidRewardParser.Logic
                     var localizedStrings = new Dictionary<string, string>();
                     foreach (string line in File.ReadAllLines(filePath))
                     {
-                        string[] splitline = line.Split(new []{ ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        if(splitline.Length == 2)
+                        string[] splitline = line.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (splitline.Length == 2)
                         {
                             localizedStrings.Add(splitline[0], splitline[1]);
                         }

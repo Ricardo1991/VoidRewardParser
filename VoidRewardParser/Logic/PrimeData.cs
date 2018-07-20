@@ -15,12 +15,13 @@ namespace VoidRewardParser.Logic
     [Serializable]
     public class PrimeData
     {
-        const string FILE = "PrimeData.data";
+        private const string FILE = "PrimeData.data";
 
         private static TimeSpan _expirationTimespan = TimeSpan.Parse(ConfigurationManager.AppSettings["CacheExpiration"]);
         private static SemaphoreSlim _cacheLock = new SemaphoreSlim(1);
 
         private static PrimeData _instance;
+
         public static async Task<PrimeData> GetInstance()
         {
             if (_instance != null)
@@ -38,14 +39,13 @@ namespace VoidRewardParser.Logic
                 }
 
                 return _instance;
-
             }
             finally
             {
                 _cacheLock.Release();
             }
         }
-        
+
         public DateTime PrimesLastRetrieved { get; set; }
         public List<PrimeItem> Primes { get; set; }
         public Dictionary<string, ItemSaveData> SavedData { get; set; } = new Dictionary<string, ItemSaveData>();
@@ -53,7 +53,7 @@ namespace VoidRewardParser.Logic
         public ItemSaveData GetDataForItem(PrimeItem item)
         {
             ItemSaveData data;
-            if(!SavedData.TryGetValue(item.Name, out data))
+            if (!SavedData.TryGetValue(item.Name, out data))
             {
                 data = new ItemSaveData();
                 SavedData[item.Name] = data;
@@ -90,13 +90,13 @@ namespace VoidRewardParser.Logic
                     new PrimeItem()
                     {
                         Name = node.ChildNodes[0].InnerText,
-                        Rarity = node.ChildNodes[1].InnerText.Contains("Rare") ? Rarity.Rare : node.ChildNodes[1].InnerText.Contains("Uncommon") ? Rarity.Uncommon : Rarity.Common
+                        Rarity = node.ChildNodes[1].InnerText.Contains("Rare") ? Rarity.Rare : node.ChildNodes[1].InnerText.Contains("Uncommon (1") ? Rarity.Uncommon : Rarity.Common
                     })
                     .GroupBy(i => i.Name)
                     .Select(g => g.First())
                     .ToList();
 
-                foreach(var prime in primeData.Primes)
+                foreach (var prime in primeData.Primes)
                 {
                     prime.Name = prime.Name.Replace("Systems Blueprint", "Systems");
                     prime.Name = prime.Name.Replace("Chassis Blueprint", "Chassis");

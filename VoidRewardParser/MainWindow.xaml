@@ -10,11 +10,12 @@
         Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Label Grid.Row="0" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotDetected, Converter={StaticResource BooleanToVilibiltyConverter}}">Warframe not detected.</Label>
+        <Label Grid.Row="0" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotFocus, Converter={StaticResource BooleanToVilibiltyConverter}}">Warframe not on focus.</Label>
         <WrapPanel Grid.Row="1">
             <CheckBox IsChecked="{Binding ShowAllPrimes}">Show All Primes</CheckBox>
         </WrapPanel>
@@ -23,14 +24,14 @@
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Path=Visible}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <forms:PrimeDisplay/>
+                    <forms:PrimeDisplay />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

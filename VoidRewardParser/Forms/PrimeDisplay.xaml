@@ -1,37 +1,37 @@
 ﻿<UserControl x:Class="VoidRewardParser.Forms.PrimeDisplay"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:VoidRewardParser.Forms"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="100" d:DesignWidth="400" Background="{Binding Path=Prime.Rarity, Converter={StaticResource RarityToColorConverter}}">
     <StackPanel Margin="5">
-        <TextBlock Text="{Binding Path=Prime.Name, Converter={StaticResource LocalizedStringConverter}}" FontSize="15" FontWeight="Bold"/>
+        <TextBlock Text="{Binding Path=Prime.Name, Converter={StaticResource LocalizedStringConverter}}" FontSize="15" FontWeight="Bold" />
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="75"/>
-                <ColumnDefinition Width="90"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="75" />
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <WrapPanel Grid.Column="0" Margin="5">
-                <TextBlock Text="Ducats: " FontSize="12"/>
-                <TextBlock Text="{Binding Path=Prime.Ducats}" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="Ducats: " FontSize="12" />
+                <TextBlock Text="{Binding Path=DucatValue}" FontSize="12" FontWeight="Bold" />
             </WrapPanel>
             <WrapPanel Grid.Column="1" Margin="5">
                 <TextBlock FontSize="12">
                     <Hyperlink NavigateUri="{Binding Path=Prime.Url}" RequestNavigate="Hyperlink_RequestNavigate">Platinum:</Hyperlink>
                 </TextBlock>
-                <TextBlock Text="{Binding Path=PlatinumPrice}" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Path=PlatinumPrice}" FontSize="12" FontWeight="Bold" />
             </WrapPanel>
             <WrapPanel Grid.Column="2" Margin="5">
-                <TextBlock Text="Number Owned: " FontSize="12"/>
+                <TextBlock Text="Number Owned: " FontSize="12" />
                 <Button Width="20" Command="{Binding Path=SubtractCommand}">-</Button>
-                <TextBox Width="20" Text="{Binding Path=Data.NumberOwned, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Width="20" Text="{Binding Path=Data.NumberOwned, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Button Width="20" Command="{Binding Path=AddCommand}">+</Button>
             </WrapPanel>
-            <TextBox Grid.Column="3" Text="{Binding Path=Data.Notes}" FontSize="12" HorizontalAlignment="Stretch" Margin="5"/>
+            <TextBox Grid.Column="3" Text="{Binding Path=Data.Notes}" FontSize="12" HorizontalAlignment="Stretch" Margin="5" />
         </Grid>
     </StackPanel>
 </UserControl>

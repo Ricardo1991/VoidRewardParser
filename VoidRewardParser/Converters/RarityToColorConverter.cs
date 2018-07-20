@@ -14,8 +14,10 @@ namespace VoidRewardParser.Converters
             {
                 case Rarity.Common:
                     return new SolidColorBrush(Colors.White);
+
                 case Rarity.Uncommon:
                     return new SolidColorBrush(Colors.SkyBlue);
+
                 case Rarity.Rare:
                     return new SolidColorBrush(Colors.Goldenrod);
             }

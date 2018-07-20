@@ -9,11 +9,11 @@ using VoidRewardParser.Entities;
 
 namespace VoidRewardParser.Logic
 {
-    public static class PlatinumPrices
+    public static class DucatPrices
     {
         private static TimeSpan _expirationTimespan = TimeSpan.Parse(ConfigurationManager.AppSettings["PlatinumCacheExpiration"]);
-        private static Dictionary<string, CacheEntry<long?>> _marketCache = new Dictionary<string, CacheEntry<long?>>();
-        private const string _baseUrl = "https://api.warframe.market/v1/items/{0}/orders";
+        private static Dictionary<string, CacheEntry<int?>> _marketCache = new Dictionary<string, CacheEntry<int?>>();
+        private const string _baseUrl = "https://api.warframe.market/v1/items/{0}";
 
         private static readonly string[] _removeBPSuffixPhrases = new[]{
             "Neuroptics", "Chassis", "Systems", "Harness", "Wings"
@@ -29,16 +29,13 @@ namespace VoidRewardParser.Logic
             { "Odonata Prime Wings Blueprint", "Odonata Prime Wings" },
         };
 
-        public static async Task<long?> GetPrimePlatSellOrders(string primeName)
+        public static async Task<int?> GetPrimePlatDucats(string primeName)
         {
             if (string.IsNullOrEmpty(primeName)) return null;
 
-            if (_marketCache.TryGetValue(primeName, out CacheEntry<long?> cacheItem))
+            if (_marketCache.TryGetValue(primeName, out CacheEntry<int?> cacheItem))
             {
-                if (!cacheItem.IsExpired(_expirationTimespan))
-                {
-                    return cacheItem.Value;
-                }
+                return cacheItem.Value;
             }
 
             string partName = primeName;
@@ -50,13 +47,13 @@ namespace VoidRewardParser.Logic
 
             if (partName.Equals("forma_blueprint"))
             {
-                _marketCache[primeName] = new CacheEntry<long?>(0);
+                _marketCache[primeName] = new CacheEntry<int?>(0);
                 return 0;
             }
 
             using (var client = new WebClient())
             {
-                Console.WriteLine("Hitting API for " + primeName + " platinum value");
+                Console.WriteLine("Hitting API for " + primeName + " ducat value");
                 var uri = new Uri(string.Format(_baseUrl, Uri.EscapeDataString(partName)));
 
                 try
@@ -65,18 +62,17 @@ namespace VoidRewardParser.Logic
 
                     dynamic result = JsonConvert.DeserializeObject(jsonData);
 
-                    IEnumerable<dynamic> orders = result.payload.orders;
-                    long? smallestPrice = orders
-                        .Where(order => order.user.status == "online" || order.user.status == "ingame")
-                        .Where(order => order.order_type == "sell")
-                        .Min(order => order.platinum);
+                    IEnumerable<dynamic> results = result.payload.item.items_in_set;
+                    int? ducatValue = results
+                        .Where(order => order.url_name == partName)
+                        .Min(order => order.ducats);
 
-                    _marketCache[primeName] = new CacheEntry<long?>(smallestPrice);
-                    return smallestPrice;
+                    _marketCache[primeName] = new CacheEntry<int?>(ducatValue);
+                    return ducatValue;
                 }
                 catch
                 {
-                    Console.Error.WriteLine("Error getting platinum price for " + primeName);
+                    Console.Error.WriteLine("Error getting ducats for " + primeName);
                     return null;
                 }
             }

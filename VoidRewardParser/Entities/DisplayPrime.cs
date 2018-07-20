@@ -1,5 +1,4 @@
 ﻿using Prism.Commands;
-using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -11,6 +10,7 @@ namespace VoidRewardParser.Entities
         private ItemSaveData _data;
         private bool _visible;
         private string _platinumPrice;
+        private string _ducatValue;
 
         public PrimeItem Prime
         {
@@ -73,6 +73,25 @@ namespace VoidRewardParser.Entities
             }
         }
 
+        public string DucatValue
+        {
+            get
+            {
+                if (_ducatValue == null)
+                {
+                    return "...";
+                }
+
+                return _ducatValue;
+            }
+            set
+            {
+                if (_ducatValue == value) return;
+                _ducatValue = value;
+                OnNotifyPropertyChanged();
+            }
+        }
+
         public DelegateCommand AddCommand { get; set; }
         public DelegateCommand SubtractCommand { get; set; }
 
@@ -91,6 +110,6 @@ namespace VoidRewardParser.Entities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
+        #endregion INotifyPropertyChanged
     }
 }

@@ -6,9 +6,9 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-            <converters:BooleanToVisibilityConverter x:Key="BooleanToVilibiltyConverter"/>
-            <converters:RarityToColorConverter x:Key="RarityToColorConverter"/>
-            <converters:LocalizedStringConverter x:Key="LocalizedStringConverter"/>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVilibiltyConverter" />
+            <converters:RarityToColorConverter x:Key="RarityToColorConverter" />
+            <converters:LocalizedStringConverter x:Key="LocalizedStringConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
