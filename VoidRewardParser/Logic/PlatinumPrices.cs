@@ -19,14 +19,14 @@ namespace VoidRewardParser.Logic
             "Neuroptics", "Chassis", "Systems", "Harness", "Wings"
         };
 
-        private static readonly Dictionary<string, string> _fixedQueryStrings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> _fixedQueryStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            { "Paris Prime Lower Limb", "Paris Prime  Lower Limb" },
-            { "Paris Prime Grip", "Paris Prime  Grip" },
             { "Kavasa Prime Band", "Kavasa Prime Collar Band" },
             { "Kavasa Prime Kubrow Collar Blueprint", "Kavasa Prime Collar Blueprint" },
             { "Kavasa Prime Buckle", "Kavasa Prime Collar Buckle" },
-            { "Lex Prime Receiver", "Lex Prime Reciever" },
+            { "Odonata Prime Harness Blueprint", "Odonata Prime Harness" },
+            { "Odonata Prime Systems Blueprint", "Odonata Prime Systems" },
+            { "Odonata Prime Wings Blueprint", "Odonata Prime Wings" },
         };
 
         public static async Task<long?> GetPrimePlatSellOrders(string primeName)
@@ -41,7 +41,12 @@ namespace VoidRewardParser.Logic
                 }
             }
 
-            var partName = primeName.ToLower().Replace(' ', '_');
+            string partName = primeName;
+            if (_fixedQueryStrings.ContainsKey(primeName))
+            {
+                partName = partName.Replace(partName, _fixedQueryStrings[partName]);
+            }
+            partName = partName.ToLower().Replace(' ', '_');
 
             if (partName.Equals("forma_blueprint"))
             {
@@ -51,6 +56,7 @@ namespace VoidRewardParser.Logic
 
             using (var client = new WebClient())
             {
+                Console.WriteLine("Hitting API for " + primeName + " platinum value");
                 var uri = new Uri(string.Format(_baseUrl, Uri.EscapeDataString(partName)));
 
                 try
