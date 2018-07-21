@@ -37,4 +37,12 @@ It also converts the captured screen to black and white, so the OCR has a better
 
 Finally, it runs the detected text trough a spellcheck, optimized for warframe lingo, so that it can fix those times the OCR reads "BLUEPRTNT" instead of "BLUEPRINT", or "RECEWER" instead of "RECEIVER".
 
-It also wont check the screen if the warframe process is not on focus
+It also wont check the screen if the warframe process is not on focus. This can be changed by changing
+
+    <add key="SkipIfNotFocus" value="true" />
+
+to
+
+    <add key="SkipIfNotFocus" value="false" />
+
+on the VoidRewardParser.exe.config file.

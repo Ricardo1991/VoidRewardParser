@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -124,11 +125,13 @@ namespace VoidRewardParser.Logic
         {
             _parseTimer.Stop();
 
+            bool SkipNotFocus = Boolean.Parse(ConfigurationManager.AppSettings["SkipIfNotFocus"]);
+
             if (!Warframe.WarframeIsRunning())
             {
                 WarframeNotDetected = true;
             }
-            else if (!IsOnFocus())
+            else if (SkipNotFocus && !IsOnFocus())
             {
                 WarframeNotFocus = true;
             }
