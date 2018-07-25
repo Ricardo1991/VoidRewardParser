@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 
 namespace VoidRewardParser.Logic
 {
@@ -7,7 +6,7 @@ namespace VoidRewardParser.Logic
     {
         public static bool WarframeIsRunning()
         {
-            return Process.GetProcesses().Any(p => string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe"));
+            return System.Diagnostics.Process.GetProcesses().Any(p => string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe"));
         }
     }
 }

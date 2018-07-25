@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -35,9 +34,9 @@ namespace VoidRewardParser.Logic
 
         public static void SaveScreenshot(Stream stream)
         {
-            Process p = GetProcess();
+            System.Diagnostics.Process p = GetProcess();
             if (p == null)
-                return;
+                throw new Exception();
 
             IntPtr ptr = p.MainWindowHandle;
             User32.Rect rect = new User32.Rect();
@@ -52,7 +51,7 @@ namespace VoidRewardParser.Logic
             {
                 using (var graphics = Graphics.FromImage(bitmap))
                 {
-                    graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new System.Drawing.Size(width, height));
+                    graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new Size(width, height));
                     graphics.Save();
                     graphics.Dispose();
                     MakeGrayscale3(bitmap).Save(stream, ImageFormat.Png);
@@ -60,9 +59,9 @@ namespace VoidRewardParser.Logic
             }
         }
 
-        public static Process GetProcess()
+        public static System.Diagnostics.Process GetProcess()
         {
-            foreach (Process p in Process.GetProcesses())
+            foreach (System.Diagnostics.Process p in System.Diagnostics.Process.GetProcesses())
             {
                 if (string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe"))
                 {
