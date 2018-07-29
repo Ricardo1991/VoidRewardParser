@@ -117,14 +117,11 @@ namespace VoidRewardParser.Logic
 
             RenderOverlay = true;
 
-            if (RenderOverlay)
+            backgroundWorker = new BackgroundWorker
             {
-                backgroundWorker = new BackgroundWorker
-                {
-                    WorkerSupportsCancellation = true
-                };
-                backgroundWorker.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
-            }
+                WorkerSupportsCancellation = true
+            };
+            backgroundWorker.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
