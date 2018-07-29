@@ -147,8 +147,11 @@ namespace VoidRewardParser.Overlay
                 String text = p.Prime.Name + "     " + p.Prime.Ducats + " Ducats    " + p.PlatinumPrice + " Plat";
 
                 // Draw a formatted text string into the DrawingContext.
-                context.DrawText(new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
-                        new Typeface("Verdana"), 12, Brushes.OrangeRed), new Point(70, (30 + 30 * i)));
+
+                var Ftext = new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
+                        new Typeface("Verdana"), 12, Brushes.OrangeRed);
+
+                context.DrawText(Ftext, new Point(70, (30 + 30 * i)));
             }
         }
     }

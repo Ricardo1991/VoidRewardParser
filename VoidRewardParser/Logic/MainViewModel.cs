@@ -140,7 +140,7 @@ namespace VoidRewardParser.Logic
                 });
             }
 
-            Console.WriteLine("Worker exit");
+            Console.WriteLine("Worker Exiting");
 
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
@@ -349,14 +349,17 @@ namespace VoidRewardParser.Logic
 
             var ducat = await DucatPrices.GetPrimePartDucats(name);
 
-            if (ducat.HasValue)
+            if (string.IsNullOrWhiteSpace(displayPrime.DucatValue) || displayPrime.DucatValue == "0" || displayPrime.DucatValue == "?" || displayPrime.DucatValue == "...")
             {
-                displayPrime.Prime.Ducats = (int)ducat;
-                displayPrime.DucatValue = ((int)ducat).ToString();
-            }
-            else
-            {
-                displayPrime.DucatValue = "?";
+
+                if (ducat.HasValue)
+                {
+                    displayPrime.DucatValue = ((int)ducat).ToString();
+                }
+                else
+                {
+                    displayPrime.DucatValue = "?";
+                }
             }
         }
 

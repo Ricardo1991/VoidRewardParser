@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ namespace VoidRewardParser.Logic
 {
     public static class DucatPrices
     {
-        private static TimeSpan _expirationTimespan = TimeSpan.Parse(ConfigurationManager.AppSettings["PlatinumCacheExpiration"]);
         private static Dictionary<string, CacheEntry<int?>> _marketCache = new Dictionary<string, CacheEntry<int?>>();
         private const string _baseUrl = "https://api.warframe.market/v1/items/{0}";
 

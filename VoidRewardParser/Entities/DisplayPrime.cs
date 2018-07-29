@@ -1,4 +1,5 @@
 ﻿using Prism.Commands;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -88,6 +89,7 @@ namespace VoidRewardParser.Entities
             {
                 if (_ducatValue == value) return;
                 _ducatValue = value;
+                Prime.Ducats = Int32.Parse(value);
                 OnNotifyPropertyChanged();
             }
         }
