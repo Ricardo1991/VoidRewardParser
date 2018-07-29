@@ -19,6 +19,7 @@
         <WrapPanel Grid.Row="1">
             <CheckBox IsChecked="{Binding ShowAllPrimes}">Show All Primes</CheckBox>
             <CheckBox IsChecked="{Binding RenderOverlay}" Margin="15,0,0,0">Render Overlay</CheckBox>
+            <CheckBox IsChecked="{Binding FetchPlatinum}" Margin="15,0,0,0">Fetch Platinum</CheckBox>
         </WrapPanel>
         <ListBox Name="primelistbox" Grid.Row="2" ItemsSource="{Binding Path=PrimeItems}" HorizontalContentAlignment="Stretch" VirtualizingPanel.ScrollUnit="Pixel">
             <ListBox.ItemContainerStyle>

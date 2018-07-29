@@ -100,6 +100,8 @@ namespace VoidRewardParser.Logic
 
         public bool RenderOverlay { get; set; }
 
+        public bool FetchPlatinum { get; set; }
+
         public event EventHandler MissionComplete;
 
         public MainViewModel()
@@ -116,6 +118,7 @@ namespace VoidRewardParser.Logic
             spelling = new SpellCheck();
 
             RenderOverlay = true;
+            FetchPlatinum = false;
 
             backgroundWorker = new BackgroundWorker
             {
@@ -326,17 +329,20 @@ namespace VoidRewardParser.Logic
 
         private async Task FetchPlatPriceTask(DisplayPrime displayPrime)
         {
-            string name = displayPrime.Prime.Name;
-
-            var minSell = await PlatinumPrices.GetPrimePlatSellOrders(name);
-
-            if (minSell.HasValue)
+            if (FetchPlatinum)
             {
-                displayPrime.PlatinumPrice = minSell.ToString();
-            }
-            else
-            {
-                displayPrime.PlatinumPrice = "?";
+                string name = displayPrime.Prime.Name;
+
+                var minSell = await PlatinumPrices.GetPrimePlatSellOrders(name);
+
+                if (minSell.HasValue)
+                {
+                    displayPrime.PlatinumPrice = minSell.ToString();
+                }
+                else
+                {
+                    displayPrime.PlatinumPrice = "?";
+                }
             }
         }
 
