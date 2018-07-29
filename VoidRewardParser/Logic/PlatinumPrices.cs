@@ -15,20 +15,6 @@ namespace VoidRewardParser.Logic
         private static Dictionary<string, CacheEntry<long?>> _marketCache = new Dictionary<string, CacheEntry<long?>>();
         private const string _baseUrl = "https://api.warframe.market/v1/items/{0}/orders";
 
-        private static readonly string[] _removeBPSuffixPhrases = new[]{
-            "Neuroptics", "Chassis", "Systems", "Harness", "Wings"
-        };
-
-        private static readonly Dictionary<string, string> _fixedQueryStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "Kavasa Prime Band", "Kavasa Prime Collar Band" },
-            { "Kavasa Prime Kubrow Collar Blueprint", "Kavasa Prime Collar Blueprint" },
-            { "Kavasa Prime Buckle", "Kavasa Prime Collar Buckle" },
-            { "Odonata Prime Harness Blueprint", "Odonata Prime Harness" },
-            { "Odonata Prime Systems Blueprint", "Odonata Prime Systems" },
-            { "Odonata Prime Wings Blueprint", "Odonata Prime Wings" },
-        };
-
         public static async Task<long?> GetPrimePlatSellOrders(string primeName)
         {
             if (string.IsNullOrEmpty(primeName)) return null;
@@ -41,12 +27,7 @@ namespace VoidRewardParser.Logic
                 }
             }
 
-            string partName = primeName;
-            if (_fixedQueryStrings.ContainsKey(primeName))
-            {
-                partName = partName.Replace(partName, _fixedQueryStrings[partName]);
-            }
-            partName = partName.ToLower().Replace(' ', '_');
+            string partName = PrimePartQueryFix.FixQueryString(primeName);
 
             if (partName.Equals("forma_blueprint"))
             {
