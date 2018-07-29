@@ -345,12 +345,10 @@ namespace VoidRewardParser.Logic
 
         private async Task FetchDucatPriceTask(DisplayPrime displayPrime)
         {
-            string name = displayPrime.Prime.Name;
-
-            var ducat = await DucatPrices.GetPrimePartDucats(name);
-
             if (string.IsNullOrWhiteSpace(displayPrime.DucatValue) || displayPrime.DucatValue == "0" || displayPrime.DucatValue == "?" || displayPrime.DucatValue == "...")
             {
+                string name = displayPrime.Prime.Name;
+                var ducat = await DucatPrices.GetPrimePartDucats(name);
 
                 if (ducat.HasValue)
                 {
@@ -375,6 +373,7 @@ namespace VoidRewardParser.Logic
 
         public async void Close()
         {
+            if (_wpfoverlay != null) _wpfoverlay.Dispose();
             (await PrimeData.GetInstance()).SaveToFile();
         }
 

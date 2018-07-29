@@ -78,12 +78,7 @@ namespace VoidRewardParser.Entities
         {
             get
             {
-                if (_ducatValue == null)
-                {
-                    return "...";
-                }
-
-                return _ducatValue;
+                return Prime.Ducats.ToString();
             }
             set
             {
