@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,25 +10,10 @@ namespace VoidRewardParser.Logic
 {
     public static class DucatPrices
     {
-        private static TimeSpan _expirationTimespan = TimeSpan.Parse(ConfigurationManager.AppSettings["PlatinumCacheExpiration"]);
         private static Dictionary<string, CacheEntry<int?>> _marketCache = new Dictionary<string, CacheEntry<int?>>();
         private const string _baseUrl = "https://api.warframe.market/v1/items/{0}";
 
-        private static readonly string[] _removeBPSuffixPhrases = new[]{
-            "Neuroptics", "Chassis", "Systems", "Harness", "Wings"
-        };
-
-        private static readonly Dictionary<string, string> _fixedQueryStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "Kavasa Prime Band", "Kavasa Prime Collar Band" },
-            { "Kavasa Prime Kubrow Collar Blueprint", "Kavasa Prime Collar Blueprint" },
-            { "Kavasa Prime Buckle", "Kavasa Prime Collar Buckle" },
-            { "Odonata Prime Harness Blueprint", "Odonata Prime Harness" },
-            { "Odonata Prime Systems Blueprint", "Odonata Prime Systems" },
-            { "Odonata Prime Wings Blueprint", "Odonata Prime Wings" },
-        };
-
-        public static async Task<int?> GetPrimePlatDucats(string primeName)
+        public static async Task<int?> GetPrimePartDucats(string primeName)
         {
             if (string.IsNullOrEmpty(primeName)) return null;
 
@@ -38,12 +22,7 @@ namespace VoidRewardParser.Logic
                 return cacheItem.Value;
             }
 
-            string partName = primeName;
-            if (_fixedQueryStrings.ContainsKey(primeName))
-            {
-                partName = partName.Replace(partName, _fixedQueryStrings[partName]);
-            }
-            partName = partName.ToLower().Replace(' ', '_');
+            string partName = PrimePartQueryFix.FixQueryString(primeName);
 
             if (partName.Equals("forma_blueprint"))
             {
