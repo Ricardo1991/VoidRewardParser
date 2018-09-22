@@ -324,6 +324,9 @@ namespace VoidRewardParser.Logic
                 correction += " " + spelling.Correct(item);
             }
 
+            //Dirty Dirty lazy fixes
+            correction.Replace("silva a aegis", "silva & aegis");
+
             return correction;
         }
 
