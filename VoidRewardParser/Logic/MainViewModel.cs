@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Configuration;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -28,7 +28,7 @@ namespace VoidRewardParser.Logic
         private bool showAllPrimes;
         private DateTime _lastMissionComplete;
         private SpellCheck spelling;
-        private OverlayPlugin _wpfoverlay;
+        private OverlayPlugin _overlay;
         private ProcessSharp _processSharp;
         private BackgroundWorker backgroundWorker;
 
@@ -130,13 +130,18 @@ namespace VoidRewardParser.Logic
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            _wpfoverlay.Enable();
+            var _wpfoverlay = (WPFOverlay)_overlay;
+
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                _wpfoverlay.Enable();
+            });
 
             while (!worker.CancellationPending)
             {
                 Application.Current.Dispatcher.Invoke((Action)delegate
                 {
-                    _wpfoverlay.Update();
+                    _overlay.Update();
                 });
             }
 
@@ -147,7 +152,6 @@ namespace VoidRewardParser.Logic
                 _wpfoverlay.Disable();
             });
 
-            e.Cancel = true;
             return;
         }
 
@@ -227,12 +231,12 @@ namespace VoidRewardParser.Logic
                     }
 
                     if (text.ToLower().Contains(LocalizationManager.MissionSuccess.ToLower()) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
-                        PrimeItems.Count - hiddenPrimes.Count == 1)
+                        hiddenPrimes.Count < PrimeItems.Count)
                     {
                         Console.WriteLine("Mission Success");
                         //Auto-record the selected reward if we detect a prime on the mission complete screen
                         _lastMissionComplete = DateTime.MinValue;
-                        await Task.Run(() => PrimeItems.FirstOrDefault(p => p.Visible)?.AddCommand?.Execute());
+                        //await Task.Run(() => PrimeItems.FirstOrDefault(p => p.Visible)?.AddCommand?.Execute());
                     }
 
                     if (text.ToLower().Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
@@ -242,8 +246,7 @@ namespace VoidRewardParser.Logic
 
                         if (RenderOverlay)
                         {
-                            if (_processSharp == null || _wpfoverlay == null)
-                                StartRenderOverlayPrimes();
+                            StartRenderOverlayPrimes();
 
                             if (!backgroundWorker.IsBusy)
                                 backgroundWorker.RunWorkerAsync();
@@ -266,9 +269,9 @@ namespace VoidRewardParser.Logic
 
         private bool StartRenderOverlayPrimes()
         {
-            if (_wpfoverlay == null)
+            if (_overlay == null)
             {
-                _wpfoverlay = new WPFOverlay();
+                _overlay = new WPFOverlay();
             }
 
             if (_processSharp == null)
@@ -280,9 +283,12 @@ namespace VoidRewardParser.Logic
 
             if (process != null)
             {
-                var d3DOverlay = (WPFOverlay)_wpfoverlay;
-                _wpfoverlay.Initialize(_processSharp.WindowFactory.MainWindow);
-                d3DOverlay.Update(displayPrimes);
+                var _wpfoverlay = (WPFOverlay)_overlay;
+
+                if (!_wpfoverlay.Initialized)
+                    _wpfoverlay.Initialize(_processSharp.WindowFactory.MainWindow);
+
+                _wpfoverlay.UpdatePrimesData(displayPrimes);
                 return true;
             }
 
@@ -379,7 +385,12 @@ namespace VoidRewardParser.Logic
 
         public async void Close()
         {
-            if (_wpfoverlay != null) _wpfoverlay.Dispose();
+            var _wpfoverlay = (WPFOverlay)_overlay;
+
+            if (_wpfoverlay != null)
+            {
+                _wpfoverlay.Dispose();
+            }
             (await PrimeData.GetInstance()).SaveToFile();
         }
 

@@ -16,26 +16,35 @@ namespace VoidRewardParser.Overlay
     public class WPFOverlay : WpfOverlayPlugin
     {
         public ISettings<OverlaySettings> Settings { get; } = new SerializableSettings<OverlaySettings>();
+        public bool Initialized { get => initialized; set => initialized = value; }
 
         // Used to limit update rates via timestamps
         // This way we can avoid thread issues with wanting to delay updates
         private readonly TickEngine _tickEngine = new TickEngine();
 
         private bool _isDisposed;
+        private bool initialized = false;
 
         private List<DisplayPrime> displayPrimes = new List<DisplayPrime>();
 
         public override void Enable()
         {
+            Console.WriteLine("Overlay: Enable");
+            IsEnabled = true;
             _tickEngine.IsTicking = true;
             base.Enable();
         }
 
         public override void Disable()
         {
+            Console.WriteLine("Overlay: Disable");
+            IsEnabled = false;
             _tickEngine.IsTicking = false;
+
             displayPrimes = new List<DisplayPrime>();
             DrawPrimesText();
+
+            OverlayWindow.Hide();
 
             base.Disable();
         }
@@ -44,6 +53,9 @@ namespace VoidRewardParser.Overlay
         {
             // Set target window by calling the base method
             base.Initialize(targetWindow);
+            Initialized = true;
+
+            Console.WriteLine("Overlay: Initialize");
 
             OverlayWindow = new OverlayWindow(targetWindow);
 
@@ -86,28 +98,34 @@ namespace VoidRewardParser.Overlay
             var activated = TargetWindow.IsActivated;
             var visible = OverlayWindow.IsVisible;
 
-            // Ensure window is shown or hidden correctly prior to updating
-            if (!activated && visible)
+            try
             {
-                OverlayWindow.Hide();
+                // Ensure window is shown or hidden correctly prior to updating
+                if (!activated && visible)
+                {
+                    OverlayWindow.Hide();
+                }
+                else if (activated && !visible)
+                {
+                    OverlayWindow.Show();
+                }
             }
-            else if (activated && !visible)
+            catch
             {
-                OverlayWindow.Show();
             }
         }
 
         public override void Update() => _tickEngine.Pulse();
 
-        public void Update(List<DisplayPrime> list)
+        public void UpdatePrimesData(List<DisplayPrime> list)
         {
             this.displayPrimes = list;
-            Update();
         }
 
         // Clear objects
         public override void Dispose()
         {
+            Console.WriteLine("Overlay: Dispose");
             if (_isDisposed)
             {
                 return;
@@ -135,7 +153,7 @@ namespace VoidRewardParser.Overlay
 
         private void DrawPrimesText()
         {
-            this.OverlayWindow.InvalidateVisual();
+            this.OverlayWindow?.InvalidateVisual();
         }
 
         public void OnDraw(object sender, DrawingContext context)
@@ -144,14 +162,14 @@ namespace VoidRewardParser.Overlay
             for (int i = 0; i < displayPrimes.Count; i++)
             {
                 DisplayPrime p = displayPrimes[i];
-                String text = p.Prime.Name + "     " + p.Prime.Ducats + " Ducats    " + p.PlatinumPrice + " Plat";
+                string text = p.Prime.Name + "     " + p.Prime.Ducats + " Ducats    " + p.PlatinumPrice + " Plat";
 
                 // Draw a formatted text string into the DrawingContext.
 
                 var Ftext = new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
                         new Typeface("Verdana"), 12, Brushes.OrangeRed);
 
-                context.DrawText(Ftext, new Point(70, (30 + 30 * i)));
+                context.DrawText(Ftext, new Point(70, (30 + 25 * i)));
             }
         }
     }
