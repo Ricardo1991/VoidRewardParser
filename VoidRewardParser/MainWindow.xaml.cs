@@ -22,9 +22,12 @@ namespace VoidRewardParser
 
         private void ViewModel_MissionComplete(object sender, EventArgs e)
         {
-            Activate();
-            Topmost = true;
-            Topmost = false;
+            if (ViewModel.MoveToTop)
+            {
+                Activate();
+                Topmost = true;
+                Topmost = false;
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)

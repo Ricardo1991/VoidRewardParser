@@ -17,9 +17,10 @@
         <Label Grid.Row="0" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotDetected, Converter={StaticResource BooleanToVilibiltyConverter}}">Warframe not detected.</Label>
         <Label Grid.Row="0" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotFocus, Converter={StaticResource BooleanToVilibiltyConverter}}">Warframe not on focus.</Label>
         <WrapPanel Grid.Row="1">
-            <CheckBox IsChecked="{Binding ShowAllPrimes}">Show All Primes</CheckBox>
-            <CheckBox IsChecked="{Binding RenderOverlay}" Margin="15,0,0,0">Render Overlay</CheckBox>
-            <CheckBox IsChecked="{Binding FetchPlatinum}" Margin="15,0,0,0">Fetch Platinum</CheckBox>
+            <CheckBox IsChecked="{Binding ShowAllPrimes}" Margin="5,0,0,0">Show All</CheckBox>
+            <CheckBox IsChecked="{Binding RenderOverlay}" Margin="15,0,0,0">Show Overlay</CheckBox>
+            <CheckBox IsChecked="{Binding FetchPlatinum}" Margin="15,0,0,0">Show Platinum</CheckBox>
+            <CheckBox IsChecked="{Binding MoveToTop}" Margin="15,0,0,0">Bring To Top</CheckBox>
         </WrapPanel>
         <ListBox Name="primelistbox" Grid.Row="2" ItemsSource="{Binding Path=PrimeItems}" HorizontalContentAlignment="Stretch" VirtualizingPanel.ScrollUnit="Pixel">
             <ListBox.ItemContainerStyle>

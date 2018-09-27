@@ -9,7 +9,6 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -101,6 +100,8 @@ namespace VoidRewardParser.Logic
         public bool RenderOverlay { get; set; }
 
         public bool FetchPlatinum { get; set; }
+
+        public bool MoveToTop { get; set; }
 
         public event EventHandler MissionComplete;
 
