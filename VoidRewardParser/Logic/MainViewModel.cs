@@ -235,9 +235,7 @@ namespace VoidRewardParser.Logic
                         hiddenPrimes.Count < PrimeItems.Count)
                     {
                         Console.WriteLine("Mission Success");
-                        //Auto-record the selected reward if we detect a prime on the mission complete screen
                         _lastMissionComplete = DateTime.MinValue;
-                        //await Task.Run(() => PrimeItems.FirstOrDefault(p => p.Visible)?.AddCommand?.Execute());
                     }
 
                     if (text.ToLower().Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)

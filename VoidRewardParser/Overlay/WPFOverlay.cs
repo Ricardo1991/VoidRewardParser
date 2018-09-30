@@ -16,15 +16,13 @@ namespace VoidRewardParser.Overlay
     public class WPFOverlay : WpfOverlayPlugin
     {
         public ISettings<OverlaySettings> Settings { get; } = new SerializableSettings<OverlaySettings>();
-        public bool Initialized { get => initialized; set => initialized = value; }
+        public bool Initialized { get; set; } = false;
 
         // Used to limit update rates via timestamps
         // This way we can avoid thread issues with wanting to delay updates
         private readonly TickEngine _tickEngine = new TickEngine();
 
         private bool _isDisposed;
-        private bool initialized = false;
-
         private List<DisplayPrime> displayPrimes = new List<DisplayPrime>();
 
         public override void Enable()
