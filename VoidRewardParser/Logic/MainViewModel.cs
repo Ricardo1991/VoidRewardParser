@@ -341,7 +341,7 @@ namespace VoidRewardParser.Logic
             {
                 string name = displayPrime.Prime.Name;
 
-                var minSell = await PlatinumPrices.GetPrimePlatSellOrders(name);
+                long? minSell = await PlatinumPrices.GetPrimePlatSellOrders(name);
 
                 if (minSell.HasValue)
                 {
@@ -359,7 +359,7 @@ namespace VoidRewardParser.Logic
             if (string.IsNullOrWhiteSpace(displayPrime.DucatValue) || displayPrime.DucatValue == "0" || displayPrime.DucatValue == "?" || displayPrime.DucatValue == "...")
             {
                 string name = displayPrime.Prime.Name;
-                var ducat = await DucatPrices.GetPrimePartDucats(name);
+                int? ducat = await DucatPrices.GetPrimePartDucats(name);
 
                 if (ducat.HasValue)
                 {
