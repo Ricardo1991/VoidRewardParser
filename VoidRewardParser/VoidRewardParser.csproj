@@ -117,6 +117,9 @@
   <PropertyGroup>
     <ManifestKeyFile>VoidRewardParser_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>voidprojectionsironc_uce_icon_ico_1DC_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.8.5.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>packages\HtmlAgilityPack.1.8.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
@@ -273,6 +276,7 @@
     <Content Include="Localization\Russian.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="voidprojectionsironc_uce_icon_ico_1DC_icon.ico" />
     <Content Include="WarframeDictionary.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

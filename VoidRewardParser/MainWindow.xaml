@@ -7,7 +7,7 @@
         xmlns:forms="clr-namespace:VoidRewardParser.Forms"
         mc:Ignorable="d"
         Title="Void Rewards Parser" Height="340" Width="500"
-        Loaded="Window_Loaded" Closed="Window_Closed" Closing="Window_Closing">
+        Loaded="Window_Loaded" Closed="Window_Closed" Closing="Window_Closing" Icon="voidprojectionsironc_uce_icon_ico_1DC_icon.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
