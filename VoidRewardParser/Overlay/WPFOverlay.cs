@@ -29,7 +29,9 @@ namespace VoidRewardParser.Overlay
 
         public override void Enable()
         {
+#if DEBUG
             Console.WriteLine("Overlay: Enable");
+#endif
             IsEnabled = true;
             _tickEngine.IsTicking = true;
             base.Enable();
@@ -37,7 +39,9 @@ namespace VoidRewardParser.Overlay
 
         public override void Disable()
         {
+#if DEBUG
             Console.WriteLine("Overlay: Disable");
+#endif
             IsEnabled = false;
             _tickEngine.IsTicking = false;
 
@@ -54,9 +58,9 @@ namespace VoidRewardParser.Overlay
             // Set target window by calling the base method
             base.Initialize(targetWindow);
             Initialized = true;
-
+#if DEBUG
             Console.WriteLine("Overlay: Initialize");
-
+#endif
             OverlayWindow = new OverlayWindow(targetWindow);
 
             // For demo, show how to use settings
@@ -125,7 +129,9 @@ namespace VoidRewardParser.Overlay
         // Clear objects
         public override void Dispose()
         {
+#if DEBUG
             Console.WriteLine("Overlay: Dispose");
+#endif
             if (_isDisposed)
             {
                 return;

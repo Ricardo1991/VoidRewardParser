@@ -146,8 +146,9 @@ namespace VoidRewardParser.Logic
                 });
             }
 
+#if DEBUG
             Console.WriteLine("Worker Exiting");
-
+#endif
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
                 _wpfoverlay.Disable();
@@ -216,7 +217,9 @@ namespace VoidRewardParser.Logic
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.Error.WriteLine("Error: " + ex.Message);
+#endif
                     _parseTimer.Start();
                     return;
                 }
@@ -234,13 +237,17 @@ namespace VoidRewardParser.Logic
                     if (text.ToLower().Contains(LocalizationManager.MissionSuccess.ToLower()) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
                         hiddenPrimes.Count < PrimeItems.Count)
                     {
+#if DEBUG
                         Console.WriteLine("Mission Success");
+#endif
                         _lastMissionComplete = DateTime.MinValue;
                     }
 
                     if (text.ToLower().Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
                     {
+#if DEBUG
                         Console.WriteLine("Select a Reward");
+#endif
                         OnMissionComplete();
 
                         if (RenderOverlay)

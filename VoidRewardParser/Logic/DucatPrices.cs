@@ -32,7 +32,9 @@ namespace VoidRewardParser.Logic
 
             using (var client = new WebClient())
             {
+#if DEBUG
                 Console.WriteLine("Hitting API for " + primeName + " ducat value");
+#endif
                 var uri = new Uri(string.Format(_baseUrl, Uri.EscapeDataString(partName)));
 
                 try
