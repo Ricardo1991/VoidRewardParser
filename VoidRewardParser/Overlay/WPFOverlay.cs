@@ -174,7 +174,7 @@ namespace VoidRewardParser.Overlay
             {
                 DisplayPrime p = displayPrimes[i];
 
-                string text = p.Prime.Name + "\t\t" + p.Prime.Ducats + " Ducats";
+                string text = p.Prime.Name + (p.Prime.Name.Length < 23 ? "\t\t" : "\t") + p.Prime.Ducats + " Ducats";
                 if (p.PlatinumPrice != "...")
                     text += "\t\t" + p.PlatinumPrice + " Plat";
 
