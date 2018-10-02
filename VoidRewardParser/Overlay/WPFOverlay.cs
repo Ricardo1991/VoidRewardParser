@@ -11,12 +11,14 @@ using OverlayWindow = Overlay.NET.Wpf.OverlayWindow;
 
 namespace VoidRewardParser.Overlay
 {
-    [RegisterPlugin("VoidRewardParserOverlayPlugin", "Jacob Kemple, Ricardo Ribeiro", "DirectxOverlay", "0.1",
+    [RegisterPlugin("VoidRewardParserOverlayPlugin", "Jacob Kemple, Ricardo Ribeiro", "WPFOverlay", "1.0",
         "A ducat and platinum overlay for reward screens")]
     public class WPFOverlay : WpfOverlayPlugin
     {
         public ISettings<OverlaySettings> Settings { get; } = new SerializableSettings<OverlaySettings>();
         public bool Initialized { get; set; } = false;
+
+        private const string TypefaceName = "Verdana";
 
         // Used to limit update rates via timestamps
         // This way we can avoid thread issues with wanting to delay updates
@@ -156,18 +158,41 @@ namespace VoidRewardParser.Overlay
 
         public void OnDraw(object sender, DrawingContext context)
         {
-            //displayPrimes
+            int drawStartX = 70;
+            int drawStartY = 30;
+
+            double height = 0, width = 0;
+            List<KeyValuePair<int, FormattedText>> _text = new List<KeyValuePair<int, FormattedText>>();
+
             for (int i = 0; i < displayPrimes.Count; i++)
             {
                 DisplayPrime p = displayPrimes[i];
-                string text = p.Prime.Name + "     " + p.Prime.Ducats + " Ducats    " + p.PlatinumPrice + " Plat";
+
+                string text = p.Prime.Name + "\t\t" + p.Prime.Ducats + " Ducats";
+                if (p.PlatinumPrice != "...")
+                    text += "\t\t" + p.PlatinumPrice + " Plat";
 
                 // Draw a formatted text string into the DrawingContext.
+                FormattedText Ftext = new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
+                        new Typeface(TypefaceName), 13, Brushes.OrangeRed);
 
-                var Ftext = new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
-                        new Typeface("Verdana"), 12, Brushes.OrangeRed);
+                height = Ftext.Height;
 
-                context.DrawText(Ftext, new Point(70, (30 + 25 * i)));
+                if (Ftext.Width > width)
+                    width = Ftext.Width;
+
+                _text.Add(new KeyValuePair<int, FormattedText>(i, Ftext));
+            }
+
+            //Draw a rectangle bellow the text for easier reading
+            context.DrawRectangle(new SolidColorBrush(Color.FromArgb(200, 0, 0, 0)),
+                                    new Pen(new SolidColorBrush(Color.FromRgb(150, 150, 150)), 2),
+                                    new Rect(drawStartX - 10, drawStartY - 10, width + 20, (height * displayPrimes.Count) + 60)
+                                  );
+
+            foreach (KeyValuePair<int, FormattedText> keyValuePair in _text)
+            {
+                context.DrawText(keyValuePair.Value, new Point(drawStartX, (drawStartY + 25 * keyValuePair.Key)));
             }
         }
     }
