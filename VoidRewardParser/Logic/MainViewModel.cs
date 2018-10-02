@@ -109,6 +109,7 @@ namespace VoidRewardParser.Logic
         {
             _parseTimer = new DispatcherTimer
             {
+                //Check screen every 1 second
                 Interval = TimeSpan.FromMilliseconds(1000)
             };
             _parseTimer.Tick += _parseTimer_Tick;
@@ -119,7 +120,6 @@ namespace VoidRewardParser.Logic
             spelling = new SpellCheck();
 
             RenderOverlay = true;
-            FetchPlatinum = false;
 
             backgroundWorker = new BackgroundWorker
             {
