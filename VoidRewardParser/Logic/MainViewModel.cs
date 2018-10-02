@@ -175,6 +175,8 @@ namespace VoidRewardParser.Logic
         private async void _parseTimer_Tick(object sender, object e)
         {
             _parseTimer.Stop();
+            WarframeNotDetected = false;
+            WarframeNotFocus = false;
 
             bool SkipNotFocus = Boolean.Parse(ConfigurationManager.AppSettings["SkipIfNotFocus"]);
 
@@ -262,9 +264,6 @@ namespace VoidRewardParser.Logic
                     {
                         backgroundWorker.CancelAsync();
                     }
-
-                    WarframeNotDetected = false;
-                    WarframeNotFocus = false;
 
                     await Task.WhenAll(fetchPlatpriceTasks);
                 }
