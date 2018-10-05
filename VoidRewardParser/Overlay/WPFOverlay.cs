@@ -74,10 +74,6 @@ namespace VoidRewardParser.Overlay
             current.Name = GetName(type);
             current.Version = GetVersion(type);
 
-            // File is made from above info
-            Settings.Save();
-            Settings.Load();
-
             // Set up update interval and register events for the tick engine.
             _tickEngine.Interval = Settings.Current.UpdateRate.Milliseconds();
             _tickEngine.PreTick += OnPreTick;
