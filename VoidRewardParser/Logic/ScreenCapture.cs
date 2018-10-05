@@ -34,7 +34,7 @@ namespace VoidRewardParser.Logic
 
         public static void SaveScreenshot(Stream stream)
         {
-            System.Diagnostics.Process p = GetProcess();
+            System.Diagnostics.Process p = Warframe.GetProcess();
             if (p == null)
                 throw new Exception();
 
@@ -57,19 +57,6 @@ namespace VoidRewardParser.Logic
                     MakeGrayscale3(bitmap).Save(stream, ImageFormat.Png);
                 }
             }
-        }
-
-        public static System.Diagnostics.Process GetProcess()
-        {
-            foreach (System.Diagnostics.Process p in System.Diagnostics.Process.GetProcesses())
-            {
-                if (string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe"))
-                {
-                    return p;
-                }
-            }
-
-            return null;
         }
 
         public static Bitmap MakeGrayscale3(Bitmap original)

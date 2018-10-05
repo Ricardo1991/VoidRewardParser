@@ -281,10 +281,10 @@ namespace VoidRewardParser.Logic
 
             if (_processSharp == null)
             {
-                _processSharp = new ProcessSharp(ScreenCapture.GetProcess(), MemoryType.Remote);
+                _processSharp = new ProcessSharp(Warframe.GetProcess(), MemoryType.Remote);
             }
 
-            var process = ScreenCapture.GetProcess();
+            var process = Warframe.GetProcess();
 
             if (process != null)
             {
@@ -302,7 +302,7 @@ namespace VoidRewardParser.Logic
 
         private bool IsOnFocus()
         {
-            System.Diagnostics.Process warframeProcess = ScreenCapture.GetProcess();
+            System.Diagnostics.Process warframeProcess = Warframe.GetProcess();
             if (warframeProcess == null)
             {
                 return false;       // Warframe not running
