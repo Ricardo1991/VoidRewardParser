@@ -67,7 +67,7 @@ namespace VoidRewardParser.Overlay
             var current = Settings.Current;
             var type = GetType();
 
-            current.UpdateRate = 1000 / 60;
+            current.UpdateRate = 1000 / 30;
             current.Author = GetAuthor(type);
             current.Description = GetDescription(type);
             current.Identifier = GetIdentifier(type);

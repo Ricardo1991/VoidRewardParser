@@ -106,7 +106,7 @@ namespace VoidRewardParser.Logic
                 engine = OcrEngine.TryCreateFromUserProfileLanguages();
             }
             var decoder = await Windows.Graphics.Imaging.BitmapDecoder.CreateAsync(stream);
-            var result = await engine.RecognizeAsync(await decoder.GetSoftwareBitmapAsync());
+            OcrResult result = await engine.RecognizeAsync(await decoder.GetSoftwareBitmapAsync());
             return result.Text;
         }
 

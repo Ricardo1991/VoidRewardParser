@@ -11,7 +11,7 @@ namespace VoidRewardParser.Logic
         public static bool WarframeIsRunning()
         {
 #if DEBUG
-            return System.Diagnostics.Process.GetProcesses().Any(p => string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe") || string.Equals(p.ProcessName, "Notepad"));
+            return System.Diagnostics.Process.GetProcesses().Any(p => string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe") || string.Equals(p.ProcessName, "notepad"));
 #else
             return System.Diagnostics.Process.GetProcesses().Any(p => string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe"));
 #endif
@@ -26,7 +26,7 @@ namespace VoidRewardParser.Logic
             foreach (System.Diagnostics.Process p in System.Diagnostics.Process.GetProcesses())
             {
 #if DEBUG
-                if (string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe") || string.Equals(p.ProcessName, "Notepad"))
+                if (string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe") || string.Equals(p.ProcessName, "notepad"))
 
 #else
                 if (string.Equals(p.ProcessName, "Warframe.x64") || string.Equals(p.ProcessName, "Warframe"))
