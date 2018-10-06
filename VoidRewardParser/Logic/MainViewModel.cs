@@ -178,7 +178,7 @@ namespace VoidRewardParser.Logic
             WarframeNotDetected = false;
             WarframeNotFocus = false;
 
-            bool SkipNotFocus = Boolean.Parse(ConfigurationManager.AppSettings["SkipIfNotFocus"]);
+            bool SkipNotFocus = bool.Parse(ConfigurationManager.AppSettings["SkipIfNotFocus"]);
 
             if (!Warframe.WarframeIsRunning())
             {

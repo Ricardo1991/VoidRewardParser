@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Tesseract;
 using Windows.Globalization;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
@@ -14,16 +15,25 @@ namespace VoidRewardParser.Logic
 {
     public class ScreenCapture
     {
+        public enum FormatImage
+        { PNG, TIFF };
+
         public static async Task<string> ParseTextAsync()
         {
             try
             {
                 using (var memoryStream = new MemoryStream())
-                using (var memoryRandomAccessStream = new InMemoryRandomAccessStream())
                 {
-                    await Task.Run(() => SaveScreenshot(memoryStream));
-                    await memoryRandomAccessStream.WriteAsync(memoryStream.ToArray().AsBuffer());
-                    return await RunOcr(memoryRandomAccessStream);
+                    if (Utilities.IsWindows10OrGreater())
+                    {
+                        await Task.Run(() => SaveScreenshot(memoryStream, FormatImage.PNG));
+                        return await RunOcr(memoryStream);
+                    }
+                    else
+                    {
+                        await Task.Run(() => SaveScreenshot(memoryStream, FormatImage.TIFF));
+                        return await Task.Run(() => RunTesseractOcr(memoryStream));
+                    }
                 }
             }
             finally
@@ -32,7 +42,7 @@ namespace VoidRewardParser.Logic
             }
         }
 
-        public static void SaveScreenshot(Stream stream)
+        public static void SaveScreenshot(Stream stream, FormatImage format)
         {
             System.Diagnostics.Process p = Warframe.GetProcess();
             if (p == null)
@@ -54,7 +64,18 @@ namespace VoidRewardParser.Logic
                     graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new Size(width, height));
                     graphics.Save();
                     graphics.Dispose();
-                    MakeGrayscale3(bitmap).Save(stream, ImageFormat.Png);
+
+                    switch (format)
+                    {
+                        case FormatImage.TIFF:
+                            MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Tiff);
+                            break;
+
+                        case FormatImage.PNG:
+                        default:
+                            MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                            break;
+                    }
                 }
             }
         }
@@ -94,20 +115,42 @@ namespace VoidRewardParser.Logic
             return newBitmap;
         }
 
-        private static async Task<string> RunOcr(IRandomAccessStream stream)
+        private static async Task<string> RunOcr(MemoryStream memoryStream)
         {
-            OcrEngine engine = null;
-            if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["LanguageCode"]))
+            using (var memoryRandomAccessStream = new InMemoryRandomAccessStream())
             {
-                engine = OcrEngine.TryCreateFromLanguage(new Language(ConfigurationManager.AppSettings["LanguageCode"]));
+                await memoryRandomAccessStream.WriteAsync(memoryStream.ToArray().AsBuffer());
+                OcrEngine engine = null;
+
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["LanguageCode"]))
+                {
+                    engine = OcrEngine.TryCreateFromLanguage(new Language(ConfigurationManager.AppSettings["LanguageCode"]));
+                }
+                if (engine == null)
+                {
+                    engine = OcrEngine.TryCreateFromUserProfileLanguages();
+                }
+                var decoder = await Windows.Graphics.Imaging.BitmapDecoder.CreateAsync(memoryRandomAccessStream);
+                OcrResult result = await engine.RecognizeAsync(await decoder.GetSoftwareBitmapAsync());
+                return result.Text;
             }
-            if (engine == null)
+        }
+
+        private static string RunTesseractOcr(MemoryStream memoryStream)
+        {
+            var ENGLISH_LANGUAGE = @"eng";
+            using (var ocrEngine = new TesseractEngine(@".\tessdata", ENGLISH_LANGUAGE))
             {
-                engine = OcrEngine.TryCreateFromUserProfileLanguages();
+                ocrEngine.SetVariable("load_system_dawg", false);
+                ocrEngine.SetVariable("load_freq_dawg", false);
+                using (var imageWithText = Pix.LoadTiffFromMemory(memoryStream.ToArray()))
+                {
+                    using (var page = ocrEngine.Process(imageWithText))
+                    {
+                        return page.GetText().Replace('\n', ' ');
+                    }
+                }
             }
-            var decoder = await Windows.Graphics.Imaging.BitmapDecoder.CreateAsync(stream);
-            OcrResult result = await engine.RecognizeAsync(await decoder.GetSoftwareBitmapAsync());
-            return result.Text;
         }
 
         private class User32
