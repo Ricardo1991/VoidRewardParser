@@ -147,7 +147,7 @@ namespace VoidRewardParser.Logic
                 {
                     using (var page = ocrEngine.Process(imageWithText))
                     {
-                        return page.GetText();
+                        return page.GetText().Replace('\n', ' ');
                     }
                 }
             }
