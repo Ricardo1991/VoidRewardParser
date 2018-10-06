@@ -11,8 +11,6 @@ If detected it will read out any prime parts and display the rarity and Ducat va
 
 ## Requirements:
 
-* Windows 10
-
 * .Net Framework 4.6.2+
 
 * C++ Redistributable
