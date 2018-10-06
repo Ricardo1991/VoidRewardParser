@@ -11,8 +11,6 @@ using OverlayWindow = Overlay.NET.Wpf.OverlayWindow;
 
 namespace VoidRewardParser.Overlay
 {
-    [RegisterPlugin("VoidRewardParserOverlayPlugin", "Jacob Kemple, Ricardo Ribeiro", "WPFOverlay", "1.0",
-        "A ducat and platinum overlay for reward screens")]
     public class WPFOverlay : WpfOverlayPlugin
     {
         public ISettings<OverlaySettings> Settings { get; } = new SerializableSettings<OverlaySettings>();
@@ -64,19 +62,8 @@ namespace VoidRewardParser.Overlay
 #endif
             OverlayWindow = new OverlayWindow(targetWindow);
 
-            // For demo, show how to use settings
-            var current = Settings.Current;
-            var type = GetType();
-
-            current.UpdateRate = 1000 / 30;
-            current.Author = GetAuthor(type);
-            current.Description = GetDescription(type);
-            current.Identifier = GetIdentifier(type);
-            current.Name = GetName(type);
-            current.Version = GetVersion(type);
-
             // Set up update interval and register events for the tick engine.
-            _tickEngine.Interval = Settings.Current.UpdateRate.Milliseconds();
+            _tickEngine.Interval = (1000 / 30).Milliseconds();
             _tickEngine.PreTick += OnPreTick;
             _tickEngine.Tick += OnTick;
 
@@ -143,7 +130,6 @@ namespace VoidRewardParser.Overlay
             OverlayWindow?.Close();
             OverlayWindow = null;
             _tickEngine.Stop();
-            Settings.Save();
 
             base.Dispose();
             _isDisposed = true;
@@ -171,7 +157,7 @@ namespace VoidRewardParser.Overlay
             {
                 DisplayPrime p = displayPrimes[i];
 
-                string text = p.Prime.Name + (p.Prime.Name.Length < 22 ? "\t\t" : "\t") + p.Prime.Ducats + " Ducats";
+                string text = p.Prime.Name + (p.Prime.Name.Length < 20 ? "\t\t" : "\t") + p.Prime.Ducats + " Ducats";
                 if (p.PlatinumPrice != "...")
                     text += "\t" + p.PlatinumPrice + " Plat";
 
@@ -190,7 +176,8 @@ namespace VoidRewardParser.Overlay
             //Draw a rectangle bellow the text for easier reading
             context.DrawRectangle(new SolidColorBrush(Color.FromArgb(200, 0, 0, 0)),
                                     new Pen(new SolidColorBrush(Color.FromRgb(150, 150, 150)), 2),
-                                    new Rect(drawStartX - 10, drawStartY - 10, width + 20, (height * displayPrimes.Count) + 60)
+                                    new Rect(drawStartX - 10, drawStartY - 10,
+                                            width + 20, ((height + 5) * displayPrimes.Count) + displayPrimes.Count * 7)
                                   );
 
             foreach (KeyValuePair<int, FormattedText> keyValuePair in _text)
