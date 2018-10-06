@@ -48,7 +48,8 @@ namespace VoidRewardParser.Overlay
             displayPrimes = new List<DisplayPrime>();
             DrawPrimesText();
 
-            OverlayWindow.Hide();
+            if (OverlayWindow != null)
+                OverlayWindow.Hide();
 
             base.Disable();
         }

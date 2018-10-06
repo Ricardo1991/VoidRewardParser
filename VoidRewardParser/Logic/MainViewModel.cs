@@ -390,6 +390,11 @@ namespace VoidRewardParser.Logic
 
         public async void Close()
         {
+            if (RenderOverlay && backgroundWorker.IsBusy)
+            {
+                backgroundWorker.CancelAsync();
+            }
+
             var _wpfoverlay = (WPFOverlay)_overlay;
 
             if (_wpfoverlay != null)
