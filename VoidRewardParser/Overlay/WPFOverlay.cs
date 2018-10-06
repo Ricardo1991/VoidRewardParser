@@ -18,7 +18,7 @@ namespace VoidRewardParser.Overlay
         public ISettings<OverlaySettings> Settings { get; } = new SerializableSettings<OverlaySettings>();
         public bool Initialized { get; set; } = false;
 
-        private const string TypefaceName = "Verdana";
+        private const string TypefaceName = "Courier New";
 
         // Used to limit update rates via timestamps
         // This way we can avoid thread issues with wanting to delay updates
@@ -170,9 +170,9 @@ namespace VoidRewardParser.Overlay
             {
                 DisplayPrime p = displayPrimes[i];
 
-                string text = p.Prime.Name + (p.Prime.Name.Length < 23 ? "\t\t" : "\t") + p.Prime.Ducats + " Ducats";
+                string text = p.Prime.Name + (p.Prime.Name.Length < 22 ? "\t\t" : "\t") + p.Prime.Ducats + " Ducats";
                 if (p.PlatinumPrice != "...")
-                    text += "\t\t" + p.PlatinumPrice + " Plat";
+                    text += "\t" + p.PlatinumPrice + " Plat";
 
                 // Draw a formatted text string into the DrawingContext.
                 FormattedText Ftext = new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
