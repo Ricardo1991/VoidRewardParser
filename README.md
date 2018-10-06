@@ -15,6 +15,8 @@ If detected it will read out any prime parts and display the rarity and Ducat va
 
 * .Net Framework 4.6.2+
 
+* C++ Redistributable
+
 -----
 
 ## This fork:
