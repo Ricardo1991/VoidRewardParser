@@ -15,6 +15,9 @@ namespace VoidRewardParser.Logic
 {
     public class ScreenCapture
     {
+        public enum FormatImage
+        { PNG, TIFF };
+
         public static async Task<string> ParseTextAsync()
         {
             try
@@ -23,10 +26,12 @@ namespace VoidRewardParser.Logic
                 {
                     if (Utilities.IsWindows10OrGreater())
                     {
+                        await Task.Run(() => SaveScreenshot(memoryStream, FormatImage.PNG));
                         return await RunOcr(memoryStream);
                     }
                     else
                     {
+                        await Task.Run(() => SaveScreenshot(memoryStream, FormatImage.TIFF));
                         return await Task.Run(() => RunTesseractOcr(memoryStream));
                     }
                 }
@@ -37,7 +42,7 @@ namespace VoidRewardParser.Logic
             }
         }
 
-        public static void SaveScreenshot(Stream stream)
+        public static void SaveScreenshot(Stream stream, FormatImage format)
         {
             System.Diagnostics.Process p = Warframe.GetProcess();
             if (p == null)
@@ -59,7 +64,18 @@ namespace VoidRewardParser.Logic
                     graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new Size(width, height));
                     graphics.Save();
                     graphics.Dispose();
-                    MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+
+                    switch (format)
+                    {
+                        case FormatImage.TIFF:
+                            MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Tiff);
+                            break;
+
+                        case FormatImage.PNG:
+                        default:
+                            MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                            break;
+                    }
                 }
             }
         }
