@@ -74,7 +74,6 @@ Strike
 Intensify
 Arrow
 Mutation
-Rifle
 Ammo
 Sniper
 Shotgun
@@ -290,7 +289,6 @@ Cell
 Engines
 Amalthea
 Stormbringer
-Rime
 Scattering
 Inferno
 Metis
@@ -325,7 +323,6 @@ Aegaeon
 Cassini
 Anthe
 Cosmic
-Numa
 Calypso
 Pandora
 Pursuit
@@ -466,7 +463,6 @@ Mewan
 Cyath
 Dehtat
 Kronsh
-Peye
 Laka
 Kwath
 Seekalla
@@ -490,7 +486,6 @@ Axi
 Handspring
 Convulsion
 Split
-Ophelia
 Flow
 Stabilizer
 Infested
@@ -621,7 +616,6 @@ Shock
 Firestorm
 Brugia
 Lepis
-Kala
 Azar
 Hymeno
 Isos
@@ -747,7 +741,6 @@ Viper
 Cleaving
 Whirlwind
 Tycho
-StöFler
 Copernicus
 Zeipel
 Kuva
@@ -1039,7 +1032,6 @@ Recovery
 Synergy
 Quartakk
 Command
-Name
 Napalm
 Tusk
 Chroma
@@ -1198,10 +1190,8 @@ Repellent
 Insulation
 Gunslinger
 Hydrolyst
-Sure
 Aptitude
 Spazz
-Pump
 Savvy
 Absorbers
 Diamond
@@ -1271,7 +1261,6 @@ Equilibrium
 Warrior
 Electromagnetic
 Shielding
-Kela
 Thaym
 Blitz
 Bonesaw
@@ -1406,7 +1395,6 @@ Pulse
 Ultimatum
 Buzz
 Maim
-Fanged
 Fusillade
 Sweeping
 Trickery
@@ -1526,3 +1514,15 @@ Select
 A
 Reward
 &
+1
+2
+3
+4
+5
+6
+7
+8
+9
+gram
+rubico
+revenant
