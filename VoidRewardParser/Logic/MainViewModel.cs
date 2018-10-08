@@ -30,6 +30,7 @@ namespace VoidRewardParser.Logic
         private OverlayPlugin _overlay;
         private ProcessSharp _processSharp;
         private BackgroundWorker backgroundWorker;
+        private bool SkipNotFocus;
 
         public DelegateCommand LoadCommand { get; set; }
 
@@ -126,6 +127,8 @@ namespace VoidRewardParser.Logic
                 WorkerSupportsCancellation = true
             };
             backgroundWorker.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
+
+            SkipNotFocus = bool.Parse(ConfigurationManager.AppSettings["SkipIfNotFocus"]);
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -175,98 +178,99 @@ namespace VoidRewardParser.Logic
         private async void _parseTimer_Tick(object sender, object e)
         {
             _parseTimer.Stop();
+
             WarframeNotDetected = false;
             WarframeNotFocus = false;
-
-            bool SkipNotFocus = bool.Parse(ConfigurationManager.AppSettings["SkipIfNotFocus"]);
 
             if (!Warframe.WarframeIsRunning())
             {
                 WarframeNotDetected = true;
                 _processSharp = null;
+                _parseTimer.Start();
+                return;
             }
-            else if (SkipNotFocus && !IsOnFocus())
+            if (SkipNotFocus && !IsOnFocus())
             {
                 WarframeNotFocus = true;
+                _parseTimer.Start();
+                return;
             }
-            else
+
+            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
+            List<Task> fetchPlatpriceTasks = new List<Task>();
+            string text = string.Empty;
+
+            try
             {
-                var hiddenPrimes = new List<DisplayPrime>();
-                List<Task> fetchPlatpriceTasks = new List<Task>();
-                string text = string.Empty;
+                text = await ScreenCapture.ParseTextAsync();
+                text = await Task.Run(() => SpellCheckOCR(text));
 
-                try
+                displayPrimes.Clear();
+
+                foreach (var p in PrimeItems)
                 {
-                    text = await ScreenCapture.ParseTextAsync();
-                    text = await Task.Run(() => SpellCheckOCR(text));
-
-                    displayPrimes.Clear();
-
-                    foreach (var p in PrimeItems)
+                    if (text.IndexOf(LocalizationManager.Localize(p.Prime.Name), StringComparison.InvariantCultureIgnoreCase) != -1)
                     {
-                        if (text.IndexOf(LocalizationManager.Localize(p.Prime.Name), StringComparison.InvariantCultureIgnoreCase) != -1)
-                        {
-                            p.Visible = true;
-                            displayPrimes.Add(p);
-                            fetchPlatpriceTasks.Add(FetchPlatPriceTask(p));
-                            fetchPlatpriceTasks.Add(FetchDucatPriceTask(p));
-                        }
-                        else
-                        {
-                            hiddenPrimes.Add(p);
-                        }
+                        p.Visible = true;
+                        displayPrimes.Add(p);
+                        fetchPlatpriceTasks.Add(FetchPlatPriceTask(p));
+                        fetchPlatpriceTasks.Add(FetchDucatPriceTask(p));
+                    }
+                    else
+                    {
+                        hiddenPrimes.Add(p);
                     }
                 }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Console.Error.WriteLine("Error: " + ex.Message);
+#endif
+                _parseTimer.Start();
+                return;
+            }
+            finally
+            {
+                if (!ShowAllPrimes)
+                {
+                    if (hiddenPrimes.Count < PrimeItems.Count)
+                    {
+                        //Only hide if we see at least one prime (let the old list persist until we need to refresh)
+                        foreach (var p in hiddenPrimes) { p.Visible = false; }
+                    }
+                }
+
+                if (text.ToLower().Contains(LocalizationManager.MissionSuccess.ToLower()) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
+                    hiddenPrimes.Count < PrimeItems.Count)
                 {
 #if DEBUG
-                    Console.Error.WriteLine("Error: " + ex.Message);
+                    Console.WriteLine("Mission Success");
 #endif
-                    _parseTimer.Start();
-                    return;
+                    _lastMissionComplete = DateTime.MinValue;
                 }
-                finally
+
+                if (text.ToLower().Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
                 {
-                    if (!ShowAllPrimes)
-                    {
-                        if (hiddenPrimes.Count < PrimeItems.Count)
-                        {
-                            //Only hide if we see at least one prime (let the old list persist until we need to refresh)
-                            foreach (var p in hiddenPrimes) { p.Visible = false; }
-                        }
-                    }
-
-                    if (text.ToLower().Contains(LocalizationManager.MissionSuccess.ToLower()) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
-                        hiddenPrimes.Count < PrimeItems.Count)
-                    {
 #if DEBUG
-                        Console.WriteLine("Mission Success");
+                    Console.WriteLine("Select a Reward");
 #endif
-                        _lastMissionComplete = DateTime.MinValue;
-                    }
+                    OnMissionComplete();
 
-                    if (text.ToLower().Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
+                    if (RenderOverlay)
                     {
-#if DEBUG
-                        Console.WriteLine("Select a Reward");
-#endif
-                        OnMissionComplete();
+                        StartRenderOverlayPrimes();
 
-                        if (RenderOverlay)
-                        {
-                            StartRenderOverlayPrimes();
-
-                            if (!backgroundWorker.IsBusy)
-                                backgroundWorker.RunWorkerAsync();
-                        }
+                        if (!backgroundWorker.IsBusy)
+                            backgroundWorker.RunWorkerAsync();
                     }
-                    else if (RenderOverlay && backgroundWorker.IsBusy)
-                    {
-                        backgroundWorker.CancelAsync();
-                    }
-
-                    await Task.WhenAll(fetchPlatpriceTasks);
                 }
+                else if (RenderOverlay && backgroundWorker.IsBusy)
+                {
+                    backgroundWorker.CancelAsync();
+                }
+
+                await Task.WhenAll(fetchPlatpriceTasks);
             }
 
             _parseTimer.Start();
