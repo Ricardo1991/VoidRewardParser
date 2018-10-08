@@ -25,9 +25,9 @@ If detected it will read out any prime parts and display the rarity and Ducat va
     * Converts the captured screen to black and white, so the OCR has a better time detecting text. Might or might not actually improve it.
     * Uses a custom spellcheck, optimized for warframe, so that it can fix those times the OCR reads "BLUEPRTNT" instead of "BLUEPRINT" for example.
     * It wont check the screen if the warframe process is not on focus. This can be disable to make it check always.
-    * Finished the compatibility for non-Windows 10 versions
-    * Added an optional in-game overlay so you dont have to tab to this program to check ducat and plat values.
-    * Many other bug fixes and added options
+* Finished the compatibility for non-Windows 10 versions
+* Added an optional in-game overlay so you dont have to tab to this program to check ducat and plat values.
+* Many other bug fixes and added options
 
 -----
 
