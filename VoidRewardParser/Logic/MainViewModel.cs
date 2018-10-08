@@ -30,7 +30,6 @@ namespace VoidRewardParser.Logic
         private OverlayPlugin _overlay;
         private ProcessSharp _processSharp;
         private BackgroundWorker backgroundWorker;
-        private bool SkipNotFocus;
 
         public DelegateCommand LoadCommand { get; set; }
 
@@ -102,6 +101,8 @@ namespace VoidRewardParser.Logic
 
         public bool FetchPlatinum { get; set; }
 
+        public bool SkipNotFocus { get; set; }
+
         public bool MoveToTop { get; set; }
 
         public event EventHandler MissionComplete;
@@ -127,8 +128,6 @@ namespace VoidRewardParser.Logic
                 WorkerSupportsCancellation = true
             };
             backgroundWorker.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
-
-            SkipNotFocus = bool.Parse(ConfigurationManager.AppSettings["SkipIfNotFocus"]);
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)

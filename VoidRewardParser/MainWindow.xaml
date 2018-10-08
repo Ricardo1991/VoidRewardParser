@@ -13,14 +13,16 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotDetected, Converter={StaticResource BooleanToVilibiltyConverter}}">Warframe not detected.</Label>
-        <Label Grid.Row="0" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotFocus, Converter={StaticResource BooleanToVilibiltyConverter}}">Warframe not on focus.</Label>
+        <ToolBarTray Grid.Row="0">
+        </ToolBarTray>
         <WrapPanel Grid.Row="1">
-            <CheckBox IsChecked="{Binding ShowAllPrimes}" Margin="5,0,0,0" ToolTip="List all the primed parts saved">Show All Primes</CheckBox>
-            <CheckBox IsChecked="{Binding RenderOverlay}" Margin="15,0,0,0" ToolTip="Render an Ingame Overlay, showing the results on the select reward screen">Show Overlay</CheckBox>
-            <CheckBox IsChecked="{Binding FetchPlatinum}" Margin="15,0,0,0" ToolTip="Get the Platinum price for the parts. Might take more time">Show Platinum</CheckBox>
-            <CheckBox IsChecked="{Binding MoveToTop}" Margin="15,0,0,0" ToolTip="Move this Window to the front when the reward screen is detected">Bring To Top</CheckBox>
+            <CheckBox IsChecked="{Binding ShowAllPrimes}" Margin="5,0,10,0" ToolTip="List all the primed parts saved">Show All Primes</CheckBox>
+            <CheckBox IsChecked="{Binding RenderOverlay}" Margin="5,0,10,0" ToolTip="Render an Ingame Overlay, showing the results on the select reward screen">Show Overlay</CheckBox>
+            <CheckBox IsChecked="{Binding FetchPlatinum}" Margin="5,0,10,0" ToolTip="Get the Platinum price for the parts. Might take more time">Get Platinum</CheckBox>
+            <CheckBox IsChecked="{Binding MoveToTop}" Margin="5,0,10,0" ToolTip="Move this Window to the front when the reward screen is detected">Bring To Top</CheckBox>
+            <CheckBox IsChecked="{Binding SkipNotFocus}" Margin="5,0,10,0" ToolTip="Do not read the screen if the game is not on focus">Skip if not on focus</CheckBox>
         </WrapPanel>
         <ListBox Name="primelistbox" Grid.Row="2" ItemsSource="{Binding Path=PrimeItems}" HorizontalContentAlignment="Stretch" VirtualizingPanel.ScrollUnit="Pixel">
             <ListBox.ItemContainerStyle>
@@ -38,5 +40,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <Label Grid.Row="3" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotDetected, Converter={StaticResource BooleanToVilibiltyConverter}}" FontWeight="Bold">Warframe not detected.</Label>
+        <Label Grid.Row="3" FontSize="20" HorizontalAlignment="Center" Foreground="Red" Visibility="{Binding WarframeNotFocus, Converter={StaticResource BooleanToVilibiltyConverter}}" FontWeight="Bold">Warframe not on focus.</Label>
     </Grid>
 </Window>

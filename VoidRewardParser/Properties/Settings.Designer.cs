@@ -82,5 +82,17 @@ namespace VoidRewardParser.Properties {
                 this["Width"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SkipNotFocus {
+            get {
+                return ((bool)(this["SkipNotFocus"]));
+            }
+            set {
+                this["SkipNotFocus"] = value;
+            }
+        }
     }
 }
