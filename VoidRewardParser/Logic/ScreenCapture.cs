@@ -13,18 +13,23 @@ using Windows.Storage.Streams;
 
 namespace VoidRewardParser.Logic
 {
-    public class ScreenCapture
+    public static class ScreenCapture
     {
+        private static bool? windows10 = null;
+
         public enum FormatImage
         { PNG, TIFF };
 
         public static async Task<string> ParseTextAsync()
         {
+            if (windows10 == null)
+                windows10 = Utilities.IsWindows10OrGreater();
+
             try
             {
                 using (var memoryStream = new MemoryStream())
                 {
-                    if (Utilities.IsWindows10OrGreater())
+                    if (windows10.Value)
                     {
                         await Task.Run(() => SaveScreenshot(memoryStream, FormatImage.PNG));
                         return await RunOcr(memoryStream);
@@ -153,7 +158,7 @@ namespace VoidRewardParser.Logic
             }
         }
 
-        private class User32
+        private static class User32
         {
             [DllImport("user32.dll")]
             public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
