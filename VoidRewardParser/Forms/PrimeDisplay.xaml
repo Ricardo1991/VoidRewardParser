@@ -21,7 +21,7 @@
             </WrapPanel>
             <WrapPanel Grid.Column="1" Margin="5">
                 <TextBlock FontSize="12">
-                    <Hyperlink NavigateUri="{Binding Path=Prime.Url}" RequestNavigate="Hyperlink_RequestNavigate">Platinum:</Hyperlink>
+                    <Hyperlink NavigateUri="{Binding Path=Prime.Url}" RequestNavigate="Hyperlink_RequestNavigate">Platinum: </Hyperlink>
                 </TextBlock>
                 <TextBlock Text="{Binding Path=PlatinumPrice}" FontSize="12" FontWeight="Bold" />
             </WrapPanel>
