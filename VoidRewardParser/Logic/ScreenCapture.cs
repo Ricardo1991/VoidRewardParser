@@ -16,6 +16,7 @@ namespace VoidRewardParser.Logic
     public static class ScreenCapture
     {
         private static bool? windows10 = null;
+        private static TesseractEngine ocrEngine = null;
 
         public enum FormatImage
         { PNG, TIFF };
@@ -79,6 +80,12 @@ namespace VoidRewardParser.Logic
                         case FormatImage.PNG:
                         default:
                             MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+#if DEBUG
+                            //using (FileStream file = new FileStream("shot_" + DateTime.Now.ToString("HH_mm_ss") + ".png", FileMode.Create, FileAccess.Write))
+                            //{
+                            //    ((MemoryStream)stream).WriteTo(file);
+                            //}
+#endif
                             break;
                     }
                 }
@@ -122,6 +129,8 @@ namespace VoidRewardParser.Logic
 
         private static async Task<string> RunOcr(MemoryStream memoryStream)
         {
+            if (memoryStream == null || memoryStream.Length == 0) return "";
+
             using (var memoryRandomAccessStream = new InMemoryRandomAccessStream())
             {
                 await memoryRandomAccessStream.WriteAsync(memoryStream.ToArray().AsBuffer());
@@ -143,17 +152,21 @@ namespace VoidRewardParser.Logic
 
         private static string RunTesseractOcr(MemoryStream memoryStream)
         {
-            var ENGLISH_LANGUAGE = @"eng";
-            using (var ocrEngine = new TesseractEngine(@".\tessdata", ENGLISH_LANGUAGE))
+            if (memoryStream == null || memoryStream.Length == 0) return "";
+
+            if (ocrEngine == null)
             {
+                var ENGLISH_LANGUAGE = @"eng";
+                ocrEngine = new TesseractEngine(@".\tessdata", ENGLISH_LANGUAGE);
                 ocrEngine.SetVariable("load_system_dawg", false);
                 ocrEngine.SetVariable("load_freq_dawg", false);
-                using (var imageWithText = Pix.LoadTiffFromMemory(memoryStream.ToArray()))
+            }
+
+            using (var imageWithText = Pix.LoadTiffFromMemory(memoryStream.ToArray()))
+            {
+                using (var page = ocrEngine.Process(imageWithText))
                 {
-                    using (var page = ocrEngine.Process(imageWithText))
-                    {
-                        return page.GetText().Replace('\n', ' ');
-                    }
+                    return page.GetText().Replace('\n', ' ');
                 }
             }
         }
