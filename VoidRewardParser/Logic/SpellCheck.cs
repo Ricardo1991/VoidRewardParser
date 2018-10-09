@@ -40,7 +40,7 @@ namespace VoidRewardParser.Logic
             if (_dictionary.ContainsKey(word))
                 return word;
 
-            List<String> list = Edits(word);
+            List<string> list = Edits(word);
             Dictionary<string, int> candidates = new Dictionary<string, int>();
 
             foreach (string wordVariation in list)

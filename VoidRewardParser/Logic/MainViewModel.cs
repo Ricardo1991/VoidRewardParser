@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -121,8 +120,6 @@ namespace VoidRewardParser.Logic
 
             spelling = new SpellCheck();
 
-            RenderOverlay = true;
-
             backgroundWorker = new BackgroundWorker
             {
                 WorkerSupportsCancellation = true
@@ -135,14 +132,14 @@ namespace VoidRewardParser.Logic
             BackgroundWorker worker = sender as BackgroundWorker;
             var _wpfoverlay = (WPFOverlay)_overlay;
 
-            Application.Current.Dispatcher.Invoke((Action)delegate
+            Application.Current.Dispatcher.Invoke(delegate
             {
                 _wpfoverlay.Enable();
             });
 
             while (!worker.CancellationPending)
             {
-                Application.Current.Dispatcher.Invoke((Action)delegate
+                Application.Current.Dispatcher.Invoke(delegate
                 {
                     _overlay.Update();
                 });
@@ -151,7 +148,7 @@ namespace VoidRewardParser.Logic
 #if DEBUG
             Console.WriteLine("Worker Exiting");
 #endif
-            Application.Current.Dispatcher.Invoke((Action)delegate
+            Application.Current.Dispatcher.Invoke(delegate
             {
                 _wpfoverlay.Disable();
             });
@@ -196,7 +193,7 @@ namespace VoidRewardParser.Logic
             }
 
             List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
-            List<Task> fetchPlatpriceTasks = new List<Task>();
+            List<Task> fetchPricesTasks = new List<Task>();
             string text = string.Empty;
 
             try
@@ -212,8 +209,8 @@ namespace VoidRewardParser.Logic
                     {
                         p.Visible = true;
                         displayPrimes.Add(p);
-                        fetchPlatpriceTasks.Add(FetchPlatPriceTask(p));
-                        fetchPlatpriceTasks.Add(FetchDucatPriceTask(p));
+                        fetchPricesTasks.Add(FetchPlatPriceTask(p));
+                        fetchPricesTasks.Add(FetchDucatPriceTask(p));
                     }
                     else
                     {
@@ -258,18 +255,19 @@ namespace VoidRewardParser.Logic
 
                     if (RenderOverlay)
                     {
-                        StartRenderOverlayPrimes();
-
                         if (!backgroundWorker.IsBusy)
+                        {
+                            StartRenderOverlayPrimes();
                             backgroundWorker.RunWorkerAsync();
+                        }
                     }
                 }
-                else if (RenderOverlay && backgroundWorker.IsBusy)
+                else if (backgroundWorker.IsBusy)
                 {
                     backgroundWorker.CancelAsync();
                 }
 
-                await Task.WhenAll(fetchPlatpriceTasks);
+                await Task.WhenAll(fetchPricesTasks);
             }
 
             _parseTimer.Start();
