@@ -25,6 +25,7 @@ namespace VoidRewardParser
             this.Width = Properties.Settings.Default.Width;
             ViewModel.FetchPlatinum = Properties.Settings.Default.fetchPlat;
             ViewModel.SkipNotFocus = Properties.Settings.Default.SkipNotFocus;
+            ViewModel.RenderOverlay = Properties.Settings.Default.RenderOverlay;
         }
 
         private void ViewModel_MissionComplete(object sender, EventArgs e)
@@ -67,6 +68,7 @@ namespace VoidRewardParser
 
             Properties.Settings.Default.fetchPlat = ViewModel.FetchPlatinum;
             Properties.Settings.Default.SkipNotFocus = ViewModel.SkipNotFocus;
+            Properties.Settings.Default.RenderOverlay = ViewModel.RenderOverlay;
             Properties.Settings.Default.Save();
         }
     }
