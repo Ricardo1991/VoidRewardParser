@@ -4,6 +4,7 @@ using Process.NET.Windows;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using VoidRewardParser.Entities;
@@ -24,6 +25,13 @@ namespace VoidRewardParser.Overlay
 
         private bool _isDisposed;
         private List<DisplayPrime> displayPrimes = new List<DisplayPrime>();
+
+        private static SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
+        private static Brush penBrush = new SolidColorBrush(Color.FromRgb(150, 150, 150));
+        private static Pen pen = new Pen(penBrush, 2);
+
+        private static int drawStartX = 70;
+        private static int drawStartY = 30;
 
         public override void Enable()
         {
@@ -147,38 +155,35 @@ namespace VoidRewardParser.Overlay
 
         public void OnDraw(object sender, DrawingContext context)
         {
-            int drawStartX = 70;
-            int drawStartY = 30;
-
-            double height = 0, width = 0;
+            double height = 0;
+            double width = 0;
             List<KeyValuePair<int, FormattedText>> _text = new List<KeyValuePair<int, FormattedText>>();
 
             for (int i = 0; i < displayPrimes.Count; i++)
             {
                 DisplayPrime p = displayPrimes[i];
 
-                string text = p.Prime.Name + (p.Prime.Name.Length < 20 ? "\t\t" : "\t") + p.Prime.Ducats + " Ducats";
-                if (p.PlatinumPrice != "...")
-                    text += "\t" + p.PlatinumPrice + " Plat";
+                StringBuilder text = new StringBuilder(p.Prime.Name);
+                text.Append(p.Prime.Name.Length < 20 ? "\t\t" : "\t");
+                text.Append(p.Prime.Ducats + " Ducats");
+
+                if (p.PlatinumPrice != "?")
+                    text.Append("\t" + p.PlatinumPrice + " Plat");
 
                 // Draw a formatted text string into the DrawingContext.
-                FormattedText Ftext = new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
+                FormattedText Ftext = new FormattedText(text.ToString(), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
                         new Typeface(TypefaceName), 13, Brushes.OrangeRed);
 
                 height = Ftext.Height;
 
-                if (Ftext.Width > width)
+                if (width < Ftext.Width)
                     width = Ftext.Width;
 
                 _text.Add(new KeyValuePair<int, FormattedText>(i, Ftext));
             }
 
             //Draw a rectangle bellow the text for easier reading
-            context.DrawRectangle(new SolidColorBrush(Color.FromArgb(200, 0, 0, 0)),
-                                    new Pen(new SolidColorBrush(Color.FromRgb(150, 150, 150)), 2),
-                                    new Rect(drawStartX - 10, drawStartY - 10,
-                                            width + 20, ((height + 5) * displayPrimes.Count) + displayPrimes.Count * 7)
-                                  );
+            context.DrawRectangle(brush, pen, new Rect(drawStartX - 10, drawStartY - 10, width + 20, ((height + 5) * displayPrimes.Count) + displayPrimes.Count * 7));
 
             foreach (KeyValuePair<int, FormattedText> keyValuePair in _text)
             {

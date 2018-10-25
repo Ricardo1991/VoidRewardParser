@@ -61,7 +61,7 @@ namespace VoidRewardParser.Entities
             {
                 if (_platinumPrice == null)
                 {
-                    return "...";
+                    return "?";
                 }
 
                 return _platinumPrice;

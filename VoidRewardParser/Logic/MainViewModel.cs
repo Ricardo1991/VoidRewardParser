@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -178,6 +179,10 @@ namespace VoidRewardParser.Logic
             WarframeNotDetected = false;
             WarframeNotFocus = false;
 
+            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
+            List<Task> fetchPricesTasks = new List<Task>();
+            string text = string.Empty;
+
             if (!Warframe.WarframeIsRunning())
             {
                 WarframeNotDetected = true;
@@ -191,10 +196,6 @@ namespace VoidRewardParser.Logic
                 _parseTimer.Start();
                 return;
             }
-
-            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
-            List<Task> fetchPricesTasks = new List<Task>();
-            string text = string.Empty;
 
             try
             {
@@ -329,17 +330,18 @@ namespace VoidRewardParser.Logic
         private string SpellCheckOCR(string text)
         {
             if (spelling == null) return text;
+            if (string.IsNullOrEmpty(text)) return text;
 
-            string correction = "";
+            StringBuilder correction = new StringBuilder();
             foreach (string item in text.Split(' '))
             {
-                correction += " " + spelling.Correct(item);
+                correction.Append(" " + spelling.Correct(item));
             }
 
             //Dirty Dirty lazy fixes
             correction.Replace("silva a aegis", "silva & aegis");
 
-            return correction;
+            return correction.ToString();
         }
 
         private async Task FetchPlatPriceTask(DisplayPrime displayPrime)

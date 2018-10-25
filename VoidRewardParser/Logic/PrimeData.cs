@@ -52,8 +52,7 @@ namespace VoidRewardParser.Logic
 
         public ItemSaveData GetDataForItem(PrimeItem item)
         {
-            ItemSaveData data;
-            if (!SavedData.TryGetValue(item.Name, out data))
+            if (!SavedData.TryGetValue(item.Name, out ItemSaveData data))
             {
                 data = new ItemSaveData();
                 SavedData[item.Name] = data;

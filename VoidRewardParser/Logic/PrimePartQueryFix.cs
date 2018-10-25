@@ -19,10 +19,9 @@ namespace VoidRewardParser.Logic
             { "Odonata Prime Wings Blueprint", "Odonata Prime Wings" },
         };
 
-        public static string FixQueryString(string primeName)
+        public static string FixQueryString(string partName)
         {
-            string partName = primeName;
-            if (_fixedQueryStrings.ContainsKey(primeName))
+            if (_fixedQueryStrings.ContainsKey(partName))
             {
                 partName = partName.Replace(partName, _fixedQueryStrings[partName]);
             }
