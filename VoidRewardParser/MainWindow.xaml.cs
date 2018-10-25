@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using VoidRewardParser.Logic;
+using VoidRewardParser.Properties;
 
 namespace VoidRewardParser
 {
@@ -19,13 +20,20 @@ namespace VoidRewardParser
             DataContext = ViewModel;
             ViewModel.MissionComplete += ViewModel_MissionComplete;
 
-            this.Top = Properties.Settings.Default.Top;
-            this.Left = Properties.Settings.Default.Left;
-            this.Height = Properties.Settings.Default.Height;
-            this.Width = Properties.Settings.Default.Width;
-            ViewModel.FetchPlatinum = Properties.Settings.Default.fetchPlat;
-            ViewModel.SkipNotFocus = Properties.Settings.Default.SkipNotFocus;
-            ViewModel.RenderOverlay = Properties.Settings.Default.RenderOverlay;
+            if (Settings.Default.UpgradeRequired)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+                Settings.Default.Save();
+            }
+
+            this.Top = Settings.Default.Top;
+            this.Left = Settings.Default.Left;
+            this.Height = Settings.Default.Height;
+            this.Width = Settings.Default.Width;
+            ViewModel.FetchPlatinum = Settings.Default.fetchPlat;
+            ViewModel.SkipNotFocus = Settings.Default.SkipNotFocus;
+            ViewModel.RenderOverlay = Settings.Default.RenderOverlay;
         }
 
         private void ViewModel_MissionComplete(object sender, EventArgs e)
@@ -53,23 +61,23 @@ namespace VoidRewardParser
             if (WindowState == WindowState.Maximized)
             {
                 // Use the RestoreBounds as the current values will be 0, 0 and the size of the screen
-                Properties.Settings.Default.Top = RestoreBounds.Top;
-                Properties.Settings.Default.Left = RestoreBounds.Left;
-                Properties.Settings.Default.Height = RestoreBounds.Height;
-                Properties.Settings.Default.Width = RestoreBounds.Width;
+                Settings.Default.Top = RestoreBounds.Top;
+                Settings.Default.Left = RestoreBounds.Left;
+                Settings.Default.Height = RestoreBounds.Height;
+                Settings.Default.Width = RestoreBounds.Width;
             }
             else
             {
-                Properties.Settings.Default.Top = this.Top;
-                Properties.Settings.Default.Left = this.Left;
-                Properties.Settings.Default.Height = this.Height;
-                Properties.Settings.Default.Width = this.Width;
+                Settings.Default.Top = this.Top;
+                Settings.Default.Left = this.Left;
+                Settings.Default.Height = this.Height;
+                Settings.Default.Width = this.Width;
             }
 
-            Properties.Settings.Default.fetchPlat = ViewModel.FetchPlatinum;
-            Properties.Settings.Default.SkipNotFocus = ViewModel.SkipNotFocus;
-            Properties.Settings.Default.RenderOverlay = ViewModel.RenderOverlay;
-            Properties.Settings.Default.Save();
+            Settings.Default.fetchPlat = ViewModel.FetchPlatinum;
+            Settings.Default.SkipNotFocus = ViewModel.SkipNotFocus;
+            Settings.Default.RenderOverlay = ViewModel.RenderOverlay;
+            Settings.Default.Save();
         }
     }
 }
