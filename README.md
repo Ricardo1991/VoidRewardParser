@@ -44,3 +44,10 @@ If your Windows default language does not match the language you use in the game
     <add key="LanguageCode" value="en"/>
 
 If your language isn't currently supported, check out the [new localization readme](https://github.com/Ricardo1991/VoidRewardParser/tree/master/VoidRewardParser/Localization), and send me the file so I can include it.
+
+
+-----
+
+## Usage Warning
+
+Read the [Warframe EULA](https://www.warframe.com/eula) first, specially 2.F and 4 before deciding to use this program
