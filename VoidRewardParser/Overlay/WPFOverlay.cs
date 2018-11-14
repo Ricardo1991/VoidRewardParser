@@ -175,9 +175,10 @@ namespace VoidRewardParser.Overlay
                     text.Append("\t" + p.Data.Notes);
                 }
 
+                SolidColorBrush color = p.Data.NumberOwned >= 1 ? Brushes.CadetBlue : Brushes.OrangeRed;
                 // Draw a formatted text string into the DrawingContext.
                 FormattedText Ftext = new FormattedText(text.ToString(), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
-                        new Typeface(TypefaceName), 13, Brushes.OrangeRed);
+                        new Typeface(TypefaceName), 13, color);
 
                 height = Ftext.Height;
 
