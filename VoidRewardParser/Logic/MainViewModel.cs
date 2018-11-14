@@ -179,10 +179,6 @@ namespace VoidRewardParser.Logic
             WarframeNotDetected = false;
             WarframeNotFocus = false;
 
-            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
-            List<Task> fetchPricesTasks = new List<Task>();
-            string text = string.Empty;
-
             if (!Warframe.WarframeIsRunning())
             {
                 WarframeNotDetected = true;
@@ -196,6 +192,10 @@ namespace VoidRewardParser.Logic
                 _parseTimer.Start();
                 return;
             }
+
+            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
+            List<Task> fetchPricesTasks = new List<Task>();
+            string text = string.Empty;
 
             try
             {
@@ -218,17 +218,7 @@ namespace VoidRewardParser.Logic
                         hiddenPrimes.Add(p);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-#if DEBUG
-                Console.Error.WriteLine("Error: " + ex.Message);
-#endif
-                _parseTimer.Start();
-                return;
-            }
-            finally
-            {
+
                 if (!ShowAllPrimes)
                 {
                     if (hiddenPrimes.Count < PrimeItems.Count)
@@ -238,7 +228,7 @@ namespace VoidRewardParser.Logic
                     }
                 }
 
-                if (text.ToLower().Contains(LocalizationManager.MissionSuccess.ToLower()) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
+                if (text.Contains(LocalizationManager.MissionSuccess.ToLower()) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
                     hiddenPrimes.Count < PrimeItems.Count)
                 {
 #if DEBUG
@@ -247,20 +237,17 @@ namespace VoidRewardParser.Logic
                     _lastMissionComplete = DateTime.MinValue;
                 }
 
-                if (text.ToLower().Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
+                if (text.Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
                 {
 #if DEBUG
                     Console.WriteLine("Select a Reward");
 #endif
                     OnMissionComplete();
 
-                    if (RenderOverlay)
+                    if (RenderOverlay && !backgroundWorker.IsBusy)
                     {
-                        if (!backgroundWorker.IsBusy)
-                        {
-                            StartRenderOverlayPrimes();
-                            backgroundWorker.RunWorkerAsync();
-                        }
+                        StartRenderOverlayPrimes();
+                        backgroundWorker.RunWorkerAsync();
                     }
                 }
                 else if (backgroundWorker.IsBusy)
@@ -270,11 +257,19 @@ namespace VoidRewardParser.Logic
 
                 await Task.WhenAll(fetchPricesTasks);
             }
-
-            _parseTimer.Start();
+            catch (Exception ex)
+            {
+#if DEBUG
+                Console.Error.WriteLine("Error: " + ex.Message);
+#endif
+            }
+            finally
+            {
+                _parseTimer.Start();
+            }
         }
 
-        private bool StartRenderOverlayPrimes()
+        private void StartRenderOverlayPrimes()
         {
             if (_overlay == null)
             {
@@ -286,9 +281,7 @@ namespace VoidRewardParser.Logic
                 _processSharp = new ProcessSharp(Warframe.GetProcess(), MemoryType.Remote);
             }
 
-            var process = Warframe.GetProcess();
-
-            if (process != null)
+            if (_processSharp != null)
             {
                 var _wpfoverlay = (WPFOverlay)_overlay;
 
@@ -296,10 +289,7 @@ namespace VoidRewardParser.Logic
                     _wpfoverlay.Initialize(_processSharp.WindowFactory.MainWindow);
 
                 _wpfoverlay.UpdatePrimesData(displayPrimes);
-                return true;
             }
-
-            return false;
         }
 
         private bool IsOnFocus()

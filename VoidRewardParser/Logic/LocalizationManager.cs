@@ -26,19 +26,29 @@ namespace VoidRewardParser.Logic
 
         public static string Localize(string stringToLocalize)
         {
-            if (string.IsNullOrWhiteSpace(stringToLocalize)) return stringToLocalize;
-            string localizedString;
-            _localizedStrings.Value.TryGetValue(stringToLocalize, out localizedString);
-            if (!string.IsNullOrWhiteSpace(localizedString))
+            if (string.IsNullOrWhiteSpace(stringToLocalize))
+                return stringToLocalize;
+
+            try
             {
-                return localizedString;
+                _localizedStrings.Value.TryGetValue(stringToLocalize, out string localizedString);
+
+                if (!string.IsNullOrWhiteSpace(localizedString))
+                {
+                    return localizedString;
+                }
             }
+            catch
+            {
+            }
+
+            //TODO: Maybe log that x prime item is missing from localization
             return stringToLocalize;
         }
 
         public static Dictionary<string, string> LoadLocalizedStrings()
         {
-            if (Language == "English")
+            if (Language.ToLower() == "english")
             {
                 //Cheat, we don't need to localize these
                 return new Dictionary<string, string>();
