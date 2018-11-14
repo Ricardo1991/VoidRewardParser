@@ -170,6 +170,11 @@ namespace VoidRewardParser.Overlay
                 if (p.PlatinumPrice != "?")
                     text.Append("\t" + p.PlatinumPrice + " Plat");
 
+                if (!string.IsNullOrWhiteSpace(p.Data.Notes))
+                {
+                    text.Append("\t" + p.Data.Notes);
+                }
+
                 // Draw a formatted text string into the DrawingContext.
                 FormattedText Ftext = new FormattedText(text.ToString(), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
                         new Typeface(TypefaceName), 13, Brushes.OrangeRed);
