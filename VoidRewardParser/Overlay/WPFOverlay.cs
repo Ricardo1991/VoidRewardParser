@@ -165,7 +165,7 @@ namespace VoidRewardParser.Overlay
 
                 StringBuilder text = new StringBuilder(p.Prime.Name);
                 text.Append(p.Prime.Name.Length < 20 ? "\t\t" : "\t");
-                text.Append(p.Prime.Ducats + " Ducats");
+                text.Append(p.DucatValue + " Ducats");
 
                 if (p.PlatinumPrice != "?")
                     text.Append("\t" + p.PlatinumPrice + " Plat");

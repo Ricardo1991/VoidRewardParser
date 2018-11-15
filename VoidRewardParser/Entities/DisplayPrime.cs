@@ -87,7 +87,7 @@ namespace VoidRewardParser.Entities
                 if (_ducatValue == value) return;
                 try
                 {
-                    Prime.Ducats = Int32.Parse(value);
+                    Prime.Ducats = int.Parse(value);
                     _ducatValue = value;
                 }
                 catch
