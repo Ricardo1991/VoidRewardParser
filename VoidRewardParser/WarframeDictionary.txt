@@ -52,6 +52,7 @@ Vectis
 Akbolto
 Akbronco
 Aklex
+Akjagara
 Akstiletto
 Akvasto
 Ballistica
@@ -82,6 +83,7 @@ Skyla
 Nikana
 Orthos
 Reaper
+Redeemer
 Scindo
 Silva
 &
