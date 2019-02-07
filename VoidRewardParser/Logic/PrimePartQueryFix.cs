@@ -17,6 +17,11 @@ namespace VoidRewardParser.Logic
             { "Odonata Prime Harness Blueprint", "Odonata Prime Harness" },
             { "Odonata Prime Systems Blueprint", "Odonata Prime Systems" },
             { "Odonata Prime Wings Blueprint", "Odonata Prime Wings" },
+            { "Silva & Aegis Prime Guard", "Silva and Aegis Prime Guard" },
+            { "Silva & Aegis Prime Blade", "Silva and Aegis Prime Blade" },
+            { "Silva & Aegis Prime Hilt", "Silva and Aegis Prime Hilt" },
+            { "Silva & Aegis Prime Blueprint", "Silva and Aegis Prime Blueprint" },
+            { "Silva & Aegis Prime Set", "Silva and Aegis Prime Set" },
         };
 
         public static string FixQueryString(string partName)
