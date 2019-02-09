@@ -1,9 +1,9 @@
 # Void Reward Parser
-Reads the Void Rewards screen of Warframe and displays Ducat values
+Reads the Warframe screen, looking for prime parts and displaying ducat and plat values 
 
 ## How to use:
 
-Open in background with Warframe open.
+Open in background while playing Warframe.
 As long as Warframe is running it will scan the primary monitor for primed parts.
 If detected it will read out any prime parts and display the rarity and Ducat value in a list.
 
