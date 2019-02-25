@@ -200,6 +200,7 @@ namespace VoidRewardParser.Logic
             try
             {
                 text = await ScreenCapture.ParseTextAsync();
+                text = text.ToLower();
                 if (LocalizationManager.Language.ToLower() == "english")
                 {
                     text = await Task.Run(() => SpellCheckOCR(text));
