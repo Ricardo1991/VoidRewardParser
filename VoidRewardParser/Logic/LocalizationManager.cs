@@ -31,7 +31,7 @@ namespace VoidRewardParser.Logic
 
             try
             {
-                _localizedStrings.Value.TryGetValue(stringToLocalize, out string localizedString);
+                _localizedStrings.Value.TryGetValue(stringToLocalize.ToUpper(), out string localizedString);
 
                 if (!string.IsNullOrWhiteSpace(localizedString))
                 {
@@ -65,7 +65,7 @@ namespace VoidRewardParser.Logic
                         string[] splitline = line.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                         if (splitline.Length == 2)
                         {
-                            localizedStrings.Add(splitline[0], splitline[1]);
+                            localizedStrings.Add(splitline[0].ToUpper(), splitline[1].ToUpper());
                         }
                     }
                     return localizedStrings;
