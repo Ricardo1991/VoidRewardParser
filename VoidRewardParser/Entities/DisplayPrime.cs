@@ -1,5 +1,4 @@
 ﻿using Prism.Commands;
-using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 

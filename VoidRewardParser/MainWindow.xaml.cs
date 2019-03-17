@@ -34,6 +34,18 @@ namespace VoidRewardParser
             ViewModel.FetchPlatinum = Settings.Default.fetchPlat;
             ViewModel.SkipNotFocus = Settings.Default.SkipNotFocus;
             ViewModel.RenderOverlay = Settings.Default.RenderOverlay;
+
+            //Minimize to notification
+            System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
+            ni.Icon = new System.Drawing.Icon("voidprojectionsironc_uce_icon_ico_1DC_icon.ico");
+            ni.Visible = true;
+            ni.Text = "DoubleClick to show application";
+            ni.DoubleClick +=
+                delegate (object sender, EventArgs args)
+                {
+                    this.Show();
+                    this.WindowState = WindowState.Normal;
+                };
         }
 
         private void ViewModel_MissionComplete(object sender, EventArgs e)
@@ -78,6 +90,14 @@ namespace VoidRewardParser
             Settings.Default.SkipNotFocus = ViewModel.SkipNotFocus;
             Settings.Default.RenderOverlay = ViewModel.RenderOverlay;
             Settings.Default.Save();
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+                this.Hide();
+
+            base.OnStateChanged(e);
         }
     }
 }

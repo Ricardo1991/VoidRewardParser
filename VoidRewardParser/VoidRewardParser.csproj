@@ -159,6 +159,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -333,7 +334,9 @@
     <Content Include="x86\libtesseract304.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="voidprojectionsironc_uce_icon_ico_1DC_icon.ico" />
+    <Content Include="voidprojectionsironc_uce_icon_ico_1DC_icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="WarframeDictionary.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
