@@ -11,6 +11,7 @@ namespace VoidRewardParser
 
     public partial class MainWindow : Window
     {
+        private System.Windows.Forms.NotifyIcon ni;
         public MainViewModel ViewModel { get; set; }
 
         public MainWindow()
@@ -36,7 +37,7 @@ namespace VoidRewardParser
             ViewModel.RenderOverlay = Settings.Default.RenderOverlay;
 
             //Minimize to notification
-            System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
+            ni = new System.Windows.Forms.NotifyIcon();
             ni.Icon = new System.Drawing.Icon("voidprojectionsironc_uce_icon_ico_1DC_icon.ico");
             ni.Visible = true;
             ni.Text = "DoubleClick to show application";
@@ -60,6 +61,7 @@ namespace VoidRewardParser
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            ni.Visible = false;
             ViewModel.Close();
         }
 
