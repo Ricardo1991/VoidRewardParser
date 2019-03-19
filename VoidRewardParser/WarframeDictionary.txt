@@ -139,3 +139,5 @@ A
 Reward
 Mission
 Success
+Stradavar
+Tipedo
