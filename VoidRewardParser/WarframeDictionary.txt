@@ -143,3 +143,6 @@ Stradavar
 Tipedo
 Zhuge
 Ninkondi
+Void
+Fissure
+Rewards

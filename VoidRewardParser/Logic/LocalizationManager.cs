@@ -16,7 +16,7 @@ namespace VoidRewardParser.Logic
 
         public static string SelectAReward
         {
-            get { return Localize("SELECT A REWARD"); }
+            get { return Localize("FISSURE REWARDS"); }
         }
 
         public static string MissionSuccess

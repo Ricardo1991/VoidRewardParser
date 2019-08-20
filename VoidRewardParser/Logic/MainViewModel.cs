@@ -174,6 +174,9 @@ namespace VoidRewardParser.Logic
 
         private async void _parseTimer_Tick(object sender, object e)
         {
+            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
+            List<Task> fetchPricesTasks = new List<Task>();
+            string text = string.Empty;
             _parseTimer.Stop();
 
             WarframeNotDetected = false;
@@ -193,14 +196,11 @@ namespace VoidRewardParser.Logic
                 return;
             }
 
-            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
-            List<Task> fetchPricesTasks = new List<Task>();
-            string text = string.Empty;
-
             try
             {
                 text = await ScreenCapture.ParseTextAsync();
                 text = text.ToLower();
+
                 if (LocalizationManager.Language.ToLower() == "english")
                 {
                     text = await Task.Run(() => SpellCheckOCR(text));
@@ -244,7 +244,7 @@ namespace VoidRewardParser.Logic
                 if (text.Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
                 {
 #if DEBUG
-                    Console.WriteLine("Select a Reward");
+                    Console.WriteLine("VOID FISSURE REWARDS");
 #endif
                     OnMissionComplete();
 
@@ -334,6 +334,7 @@ namespace VoidRewardParser.Logic
 
             //Dirty Dirty lazy fixes
             correction.Replace("silva a aegis", "silva & aegis");
+            correction.Replace("fissure a rewards", "fissure rewards");
 
             return correction.ToString();
         }
