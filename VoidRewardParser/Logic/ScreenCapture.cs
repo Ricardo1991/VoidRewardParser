@@ -70,16 +70,21 @@ namespace VoidRewardParser.Logic
                     graphics.CopyFromScreen(rect.Left, rect.Top, 0, 0, new Size(width, height));
                     graphics.Save();
                     graphics.Dispose();
+                    Bitmap bit;
 
                     switch (format)
                     {
                         case FormatImage.TIFF:
-                            MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Tiff);
+                            bit = MakeGrayscale3(bitmap);
+                            bit.Save(stream, System.Drawing.Imaging.ImageFormat.Tiff);
+                            bit.Dispose();
                             break;
 
                         case FormatImage.PNG:
                         default:
-                            MakeGrayscale3(bitmap).Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                            bit = MakeGrayscale3(bitmap);
+                            bit.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                            bit.Dispose();
 #if DEBUG
                             //using (FileStream file = new FileStream("shot_" + DateTime.Now.ToString("HH_mm_ss") + ".png", FileMode.Create, FileAccess.Write))
                             //{

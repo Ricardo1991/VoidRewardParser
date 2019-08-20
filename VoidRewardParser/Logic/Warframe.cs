@@ -2,7 +2,7 @@
 
 namespace VoidRewardParser.Logic
 {
-    public class Warframe
+    public static class Warframe
     {
         /// <summary>
         /// Returns true if Warframe is running
