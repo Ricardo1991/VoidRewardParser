@@ -17,7 +17,7 @@ namespace VoidRewardParser.Overlay
         public ISettings<OverlaySettings> Settings { get; } = new SerializableSettings<OverlaySettings>();
         public bool Initialized { get; set; } = false;
 
-        private const string TypefaceName = "Courier New";
+        private static readonly Typeface Typeface = new Typeface("Courier New");
 
         // Used to limit update rates via timestamps
         // This way we can avoid thread issues with wanting to delay updates
@@ -26,12 +26,12 @@ namespace VoidRewardParser.Overlay
         private bool _isDisposed;
         private List<DisplayPrime> displayPrimes = new List<DisplayPrime>();
 
-        private static SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
-        private static Brush penBrush = new SolidColorBrush(Color.FromRgb(150, 150, 150));
-        private static Pen pen = new Pen(penBrush, 2);
+        private static readonly SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
+        private static readonly Brush penBrush = new SolidColorBrush(Color.FromRgb(150, 150, 150));
+        private static readonly Pen pen = new Pen(penBrush, 2);
 
-        private static int drawStartX = 70;
-        private static int drawStartY = 30;
+        private const int drawStartX = 70;
+        private const int drawStartY = 30;
 
         public override void Enable()
         {
@@ -106,7 +106,7 @@ namespace VoidRewardParser.Overlay
                     OverlayWindow.Show();
                 }
             }
-            catch
+            catch (InvalidOperationException)
             {
             }
         }
@@ -178,7 +178,7 @@ namespace VoidRewardParser.Overlay
                 SolidColorBrush color = p.Data.NumberOwned >= 1 ? Brushes.CadetBlue : Brushes.OrangeRed;
                 // Draw a formatted text string into the DrawingContext.
                 FormattedText Ftext = new FormattedText(text.ToString(), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
-                        new Typeface(TypefaceName), 13, color);
+                        Typeface, 13, color, MainWindow.pixelsPerDip);
 
                 height = Ftext.Height;
 
@@ -189,7 +189,7 @@ namespace VoidRewardParser.Overlay
             }
 
             //Draw a rectangle bellow the text for easier reading
-            context.DrawRectangle(brush, pen, new Rect(drawStartX - 10, drawStartY - 10, width + 20, ((height + 5) * displayPrimes.Count) + displayPrimes.Count * 7));
+            context?.DrawRectangle(brush, pen, new Rect(drawStartX - 10, drawStartY - 10, width + 20, ((height + 5) * displayPrimes.Count) + displayPrimes.Count * 7));
 
             foreach (KeyValuePair<int, FormattedText> keyValuePair in _text)
             {

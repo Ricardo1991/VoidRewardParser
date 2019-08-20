@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media;
 using VoidRewardParser.Logic;
 using VoidRewardParser.Properties;
 
@@ -14,12 +15,16 @@ namespace VoidRewardParser
         private System.Windows.Forms.NotifyIcon ni;
         public MainViewModel ViewModel { get; set; }
 
+        public static double pixelsPerDip;
+
         public MainWindow()
         {
             InitializeComponent();
             ViewModel = new MainViewModel();
             DataContext = ViewModel;
             ViewModel.MissionComplete += ViewModel_MissionComplete;
+
+            pixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
 
             if (Settings.Default.UpgradeRequired)
             {
@@ -37,10 +42,12 @@ namespace VoidRewardParser
             ViewModel.RenderOverlay = Settings.Default.RenderOverlay;
 
             //Minimize to notification
-            ni = new System.Windows.Forms.NotifyIcon();
-            ni.Icon = new System.Drawing.Icon("voidprojectionsironc_uce_icon_ico_1DC_icon.ico");
-            ni.Visible = true;
-            ni.Text = "DoubleClick to show application";
+            ni = new System.Windows.Forms.NotifyIcon
+            {
+                Icon = new System.Drawing.Icon("voidprojectionsironc_uce_icon_ico_1DC_icon.ico"),
+                Visible = true,
+                Text = "DoubleClick to show application"
+            };
             ni.DoubleClick +=
                 delegate (object sender, EventArgs args)
                 {

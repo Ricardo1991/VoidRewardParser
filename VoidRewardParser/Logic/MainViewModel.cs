@@ -19,21 +19,21 @@ namespace VoidRewardParser.Logic
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private DispatcherTimer _parseTimer;
+        private DispatcherTimer parseTimer;
         private ObservableCollection<DisplayPrime> _primeItems = new ObservableCollection<DisplayPrime>();
-        private List<DisplayPrime> displayPrimes = new List<DisplayPrime>();
+        private List<DisplayPrime> detectedPrimePartsList = new List<DisplayPrime>();
         private bool _warframeNotDetected;
         private bool _warframeNotFocus;
         private bool showAllPrimes;
-        private DateTime _lastMissionComplete;
+        private DateTime lastMissionCompleteTime = DateTime.MinValue;
         private SpellCheck spelling;
-        private OverlayPlugin _overlay;
-        private ProcessSharp _processSharp;
+        private OverlayPlugin overlay;
+        private ProcessSharp WarframeProcess;
         private BackgroundWorker backgroundWorker;
 
         public DelegateCommand LoadCommand { get; set; }
 
-        public ObservableCollection<DisplayPrime> PrimeItems
+        public ObservableCollection<DisplayPrime> AllPrimePartsList
         {
             get
             {
@@ -88,7 +88,7 @@ namespace VoidRewardParser.Logic
                 showAllPrimes = value;
                 if (showAllPrimes)
                 {
-                    foreach (var primeItem in PrimeItems)
+                    foreach (var primeItem in AllPrimePartsList)
                     {
                         primeItem.Visible = true;
                     }
@@ -109,15 +109,15 @@ namespace VoidRewardParser.Logic
 
         public MainViewModel()
         {
-            _parseTimer = new DispatcherTimer
+            parseTimer = new DispatcherTimer
             {
                 //Check screen every 1 second
                 Interval = TimeSpan.FromMilliseconds(1000)
             };
-            _parseTimer.Tick += _parseTimer_Tick;
-            _parseTimer.Start();
+            parseTimer.Tick += ParseTimerTick;
+            parseTimer.Start();
 
-            LoadCommand = new DelegateCommand(LoadData);
+            LoadCommand = new DelegateCommand(LoadSavedPrimeData);
 
             spelling = new SpellCheck();
 
@@ -125,24 +125,24 @@ namespace VoidRewardParser.Logic
             {
                 WorkerSupportsCancellation = true
             };
-            backgroundWorker.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
+            backgroundWorker.DoWork += new DoWorkEventHandler(DoWorkBackground);
         }
 
-        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void DoWorkBackground(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            var _wpfoverlay = (WPFOverlay)_overlay;
+            WPFOverlay PrimePartOverlay = (WPFOverlay)overlay;
 
             Application.Current.Dispatcher.Invoke(delegate
             {
-                _wpfoverlay.Enable();
+                PrimePartOverlay.Enable();
             });
 
             while (!worker.CancellationPending)
             {
                 Application.Current.Dispatcher.Invoke(delegate
                 {
-                    _overlay.Update();
+                    overlay.Update();
                 });
             }
 
@@ -151,18 +151,18 @@ namespace VoidRewardParser.Logic
 #endif
             Application.Current.Dispatcher.Invoke(delegate
             {
-                _wpfoverlay.Disable();
+                PrimePartOverlay.Disable();
             });
 
             return;
         }
 
-        private async void LoadData()
+        private async void LoadSavedPrimeData()
         {
-            var primeData = await PrimeData.GetInstance();
+            PrimeData primeData = await PrimeData.GetInstance().ConfigureAwait(false);
             foreach (var primeItem in primeData.Primes)
             {
-                PrimeItems.Add(new DisplayPrime() { Data = primeData.GetDataForItem(primeItem), Prime = primeItem });
+                AllPrimePartsList.Add(new DisplayPrime() { Data = primeData.GetDataForItem(primeItem), Prime = primeItem });
             }
         }
 
@@ -172,12 +172,13 @@ namespace VoidRewardParser.Logic
             return prime.Visible;
         }
 
-        private async void _parseTimer_Tick(object sender, object e)
+        private async void ParseTimerTick(object sender, object e)
         {
-            List<DisplayPrime> hiddenPrimes = new List<DisplayPrime>();
-            List<Task> fetchPricesTasks = new List<Task>();
+            List<DisplayPrime> notDetectedPrimePartsList = new List<DisplayPrime>();
+            List<Task> fetchTasks = new List<Task>();
             string text = string.Empty;
-            _parseTimer.Stop();
+
+            parseTimer.Stop();
 
             WarframeNotDetected = false;
             WarframeNotFocus = false;
@@ -185,68 +186,70 @@ namespace VoidRewardParser.Logic
             if (!Warframe.WarframeIsRunning())
             {
                 WarframeNotDetected = true;
-                _processSharp = null;
-                _parseTimer.Start();
+                WarframeProcess = null;
+                parseTimer.Start();
                 return;
             }
             if (SkipNotFocus && !IsOnFocus())
             {
                 WarframeNotFocus = true;
-                _parseTimer.Start();
+                parseTimer.Start();
                 return;
             }
 
             try
             {
                 text = await ScreenCapture.ParseTextAsync();
-                text = text.ToLower();
+                text = text.ToLower(new System.Globalization.CultureInfo("en-US"));
 
-                if (LocalizationManager.Language.ToLower() == "english")
+                //Only use spellcheck if using English
+                if (LocalizationManager.Language.ToLower(new System.Globalization.CultureInfo("en-US")) == "english")
                 {
                     text = await Task.Run(() => SpellCheckOCR(text));
                 }
 
-                displayPrimes.Clear();
+                detectedPrimePartsList.Clear();
 
-                foreach (var p in PrimeItems)
+                foreach (var part in AllPrimePartsList)
                 {
-                    if (text.IndexOf(LocalizationManager.Localize(p.Prime.Name), StringComparison.InvariantCultureIgnoreCase) != -1)
+                    if (text.IndexOf(LocalizationManager.Localize(part.Prime.Name), StringComparison.InvariantCultureIgnoreCase) != -1)
                     {
-                        p.Visible = true;
-                        displayPrimes.Add(p);
-                        fetchPricesTasks.Add(FetchPlatPriceTask(p));
-                        fetchPricesTasks.Add(FetchDucatPriceTask(p));
+                        part.Visible = true;
+                        detectedPrimePartsList.Add(part);
+                        fetchTasks.Add(FetchPlatTask(part));
+                        fetchTasks.Add(FetchDucatTask(part));
                     }
                     else
                     {
-                        hiddenPrimes.Add(p);
+                        notDetectedPrimePartsList.Add(part);
                     }
                 }
 
                 if (!ShowAllPrimes)
                 {
-                    if (hiddenPrimes.Count < PrimeItems.Count)
+                    if (notDetectedPrimePartsList.Count < AllPrimePartsList.Count)
                     {
                         //Only hide if we see at least one prime (let the old list persist until we need to refresh)
-                        foreach (var p in hiddenPrimes) { p.Visible = false; }
+                        foreach (var part in notDetectedPrimePartsList) { part.Visible = false; }
                     }
                 }
 
-                if (text.Contains(LocalizationManager.MissionSuccess.ToLower()) && _lastMissionComplete.AddMinutes(1) > DateTime.Now &&
-                    hiddenPrimes.Count < PrimeItems.Count)
+                if (text.Contains(LocalizationManager.MissionSuccess.ToLower(new System.Globalization.CultureInfo("en-US"))) &&
+                    lastMissionCompleteTime + TimeSpan.FromMinutes(1.0) > DateTime.Now &&
+                    notDetectedPrimePartsList.Count < AllPrimePartsList.Count)
                 {
 #if DEBUG
                     Console.WriteLine("Mission Success");
 #endif
-                    _lastMissionComplete = DateTime.MinValue;
+                    OnMissionComplete();
                 }
 
-                if (text.Contains(LocalizationManager.SelectAReward.ToLower()) && hiddenPrimes.Count < PrimeItems.Count)
+                if (text.Contains(LocalizationManager.SelectAReward.ToLower(new System.Globalization.CultureInfo("en-US"))) &&
+                    notDetectedPrimePartsList.Count < AllPrimePartsList.Count)
                 {
 #if DEBUG
-                    Console.WriteLine("VOID FISSURE REWARDS");
+                    Console.WriteLine("Select a Reward");
 #endif
-                    OnMissionComplete();
 
                     if (RenderOverlay && !backgroundWorker.IsBusy)
                     {
@@ -259,7 +262,7 @@ namespace VoidRewardParser.Logic
                     backgroundWorker.CancelAsync();
                 }
 
-                await Task.WhenAll(fetchPricesTasks);
+                await Task.WhenAll(fetchTasks).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -269,30 +272,30 @@ namespace VoidRewardParser.Logic
             }
             finally
             {
-                _parseTimer.Start();
+                parseTimer.Start();
             }
         }
 
         private void StartRenderOverlayPrimes()
         {
-            if (_overlay == null)
+            if (overlay == null)
             {
-                _overlay = new WPFOverlay();
+                overlay = new WPFOverlay();
             }
 
-            if (_processSharp == null)
+            if (WarframeProcess == null)
             {
-                _processSharp = new ProcessSharp(Warframe.GetProcess(), MemoryType.Remote);
+                WarframeProcess = new ProcessSharp(Warframe.GetProcess(), MemoryType.Remote);
             }
 
-            if (_processSharp != null)
+            if (WarframeProcess != null)
             {
-                var _wpfoverlay = (WPFOverlay)_overlay;
+                WPFOverlay wpfoverlay = (WPFOverlay)overlay;
 
-                if (!_wpfoverlay.Initialized)
-                    _wpfoverlay.Initialize(_processSharp.WindowFactory.MainWindow);
+                if (!wpfoverlay.Initialized)
+                    wpfoverlay.Initialize(WarframeProcess.WindowFactory.MainWindow);
 
-                _wpfoverlay.UpdatePrimesData(displayPrimes);
+                wpfoverlay.UpdatePrimesData(detectedPrimePartsList);
             }
         }
 
@@ -332,24 +335,24 @@ namespace VoidRewardParser.Logic
                 correction.Append(" " + spelling.Correct(item));
             }
 
-            //Dirty Dirty lazy fixes
+            //Lazy fixes
             correction.Replace("silva a aegis", "silva & aegis");
             correction.Replace("fissure a rewards", "fissure rewards");
 
             return correction.ToString();
         }
 
-        private async Task FetchPlatPriceTask(DisplayPrime displayPrime)
+        private async Task FetchPlatTask(DisplayPrime displayPrime)
         {
             if (FetchPlatinum)
             {
                 string name = displayPrime.Prime.Name;
 
-                long? minSell = await PlatinumPrices.GetPrimePlatSellOrders(name);
+                long? minSell = await PlatinumPrices.GetPrimePlatSellOrders(name).ConfigureAwait(false);
 
                 if (minSell.HasValue)
                 {
-                    displayPrime.PlatinumPrice = minSell.ToString();
+                    displayPrime.PlatinumPrice = minSell.Value.ToString();
                 }
                 else
                 {
@@ -358,16 +361,16 @@ namespace VoidRewardParser.Logic
             }
         }
 
-        private async Task FetchDucatPriceTask(DisplayPrime displayPrime)
+        private async Task FetchDucatTask(DisplayPrime displayPrime)
         {
             if (string.IsNullOrWhiteSpace(displayPrime.DucatValue) || displayPrime.DucatValue == "0" || displayPrime.DucatValue == "?" || displayPrime.DucatValue == "...")
             {
                 string name = displayPrime.Prime.Name;
-                int? ducat = await DucatPrices.GetPrimePartDucats(name);
+                int? ducat = await DucatPrices.GetPrimePartDucats(name).ConfigureAwait(false);
 
                 if (ducat.HasValue)
                 {
-                    displayPrime.DucatValue = ((int)ducat).ToString();
+                    displayPrime.DucatValue = ducat.Value.ToString();
                 }
                 else
                 {
@@ -378,11 +381,11 @@ namespace VoidRewardParser.Logic
 
         private void OnMissionComplete()
         {
-            if (_lastMissionComplete + TimeSpan.FromSeconds(30) < DateTime.Now)
+            if (lastMissionCompleteTime + TimeSpan.FromSeconds(30) < DateTime.Now)
             {
                 //Only raise this event at most once every 30 seconds
                 MissionComplete?.Invoke(this, EventArgs.Empty);
-                _lastMissionComplete = DateTime.Now;
+                lastMissionCompleteTime = DateTime.Now;
             }
         }
 
@@ -393,13 +396,13 @@ namespace VoidRewardParser.Logic
                 backgroundWorker.CancelAsync();
             }
 
-            var _wpfoverlay = (WPFOverlay)_overlay;
+            WPFOverlay wpfoverlay = (WPFOverlay)overlay;
 
-            if (_wpfoverlay != null)
+            if (wpfoverlay != null)
             {
-                _wpfoverlay.Dispose();
+                wpfoverlay.Dispose();
             }
-            (await PrimeData.GetInstance()).SaveToFile();
+            (await PrimeData.GetInstance().ConfigureAwait(false)).SaveToFile();
         }
 
         #region INotifyPropertyChanged

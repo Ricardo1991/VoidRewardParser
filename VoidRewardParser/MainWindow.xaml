@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:VoidRewardParser"
         xmlns:forms="clr-namespace:VoidRewardParser.Forms"
         mc:Ignorable="d"
         Title="Void Rewards Parser" Height="340" Width="500"
@@ -24,7 +23,7 @@
             <CheckBox IsChecked="{Binding MoveToTop}" Margin="5,0,10,0" ToolTip="Move this Window to the front when the reward screen is detected">Bring To Top</CheckBox>
             <CheckBox IsChecked="{Binding SkipNotFocus}" Margin="5,0,10,0" ToolTip="Do not read the screen if the game is not on the front">Skip if not on front</CheckBox>
         </WrapPanel>
-        <ListBox Name="primelistbox" Grid.Row="2" ItemsSource="{Binding Path=PrimeItems}" HorizontalContentAlignment="Stretch" VirtualizingPanel.ScrollUnit="Pixel">
+        <ListBox Name="primelistbox" Grid.Row="2" ItemsSource="{Binding Path=AllPrimePartsList}" HorizontalContentAlignment="Stretch" VirtualizingPanel.ScrollUnit="Pixel">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Style.Triggers>
